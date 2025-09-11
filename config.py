@@ -25,25 +25,31 @@ class Settings:
     # Configuración de Tesseract
     TESSERACT_PATH = os.getenv("TESSERACT_PATH", r"C:\Program Files\Tesseract-OCR\tesseract.exe")  # Ruta a tesseract.exe en Windows
     
-    # Configuración de LayoutParser
+    # Configuración de LayoutParser (optimizada para detección)
     LAYOUT_MODEL_CONFIG = {
         "model_name": "lp://PubLayNet/faster_rcnn_R_50_FPN_3x/config",
-        "confidence_threshold": 0.5,
+        "confidence_threshold": 0.3,  # Más bajo = detecta más elementos
         "nms_threshold": 0.5
     }
     
-    # Configuración de scikit-image
+    # Configuración de scikit-image (optimizada para velocidad)
+    FAST_MODE = os.getenv("FAST_MODE", "True").lower() == "true"  # Modo rápido por defecto
+    
     SKIMAGE_CONFIG = {
-        "bilateral_sigma_color": 0.05,
-        "bilateral_sigma_spatial": 15,
-        "gaussian_sigma": 0.5,
-        "morphology_disk_size": 1
+        "bilateral_sigma_color": 0.1,      # Más alto = más rápido
+        "bilateral_sigma_spatial": 5,      # Más bajo = más rápido
+        "gaussian_sigma": 0.1,             # Muy bajo para preservar texto
+        "morphology_disk_size": 1,         # Mantener pequeño
+        "enable_bilateral": False,         # Deshabilitar (muy lento)
+        "enable_adaptive_hist": True,      # Habilitar para mejorar contraste
+        "enable_morphology": False,        # Deshabilitar (puede eliminar texto)
+        "use_simple_preprocessing": True   # Usar preprocesamiento simple
     }
     
-    # Configuración de OCR
+    # Configuración de OCR (optimizada para máxima detección)
     OCR_CONFIG = {
-        "lang": "spa",  # Solo español
-        "config": "--psm 6 -c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,;:!?()[]{}'\"-+*/=<>@#$%&"
+        "lang": "spa+eng",  # Español + inglés como fallback
+        "config": "--psm 3 --oem 3"  # PSM 3 = detección automática completa de página
     }
 
 # Instancia global de configuración

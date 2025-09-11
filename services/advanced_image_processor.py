@@ -5,6 +5,7 @@ Alternativa más moderna a OpenCV con algoritmos mejorados
 import numpy as np
 import pytesseract
 import layoutparser as lp
+from layoutparser.models import Detectron2LayoutModel
 from PIL import Image
 import time
 import logging
@@ -37,6 +38,16 @@ class AdvancedImageProcessor:
         try:
             if settings.TESSERACT_PATH:
                 pytesseract.pytesseract.tesseract_cmd = settings.TESSERACT_PATH
+                
+                # Configurar TESSDATA_PREFIX para encontrar los archivos de idioma
+                tesseract_dir = os.path.dirname(settings.TESSERACT_PATH)
+                tessdata_dir = os.path.join(tesseract_dir, "tessdata")
+                
+                if os.path.exists(tessdata_dir):
+                    os.environ['TESSDATA_PREFIX'] = tessdata_dir
+                    logger.info(f"TESSDATA_PREFIX configurado: {tessdata_dir}")
+                else:
+                    logger.warning(f"Directorio tessdata no encontrado: {tessdata_dir}")
             
             pytesseract.get_tesseract_version()
             logger.info("Tesseract OCR configurado correctamente")
@@ -48,7 +59,7 @@ class AdvancedImageProcessor:
     def _load_layout_model(self):
         """Cargar el modelo de LayoutParser"""
         try:
-            self.layout_model = lp.Detectron2LayoutModel(
+            self.layout_model = Detectron2LayoutModel(
                 config_path=settings.LAYOUT_MODEL_CONFIG["model_name"],
                 threshold=settings.LAYOUT_MODEL_CONFIG["confidence_threshold"],
                 label_map={0: "Text", 1: "Title", 2: "List", 3: "Table", 4: "Figure"}
@@ -97,36 +108,50 @@ class AdvancedImageProcessor:
             if image.mode != 'L':
                 image = image.convert('L')
             
+            # Mantener tamaño original de la imagen para preservar calidad
+            logger.info(f"Procesando imagen con tamaño original: {image.size}")
+            
             # Convertir a array de numpy
             image_array = np.array(image, dtype=np.float64)
             
-            # Normalizar imagen
-            image_array = exposure.rescale_intensity(image_array)
-            
-            # Aplicar filtro bilateral para reducir ruido preservando bordes
-            image_array = denoise_bilateral(
-                image_array, 
-                sigma_color=settings.SKIMAGE_CONFIG["bilateral_sigma_color"], 
-                sigma_spatial=settings.SKIMAGE_CONFIG["bilateral_sigma_spatial"]
-            )
-            
-            # Mejorar contraste usando equalización adaptativa
-            image_array = exposure.equalize_adapthist(image_array, clip_limit=0.03)
-            
-            # Aplicar filtro gaussiano suave
-            image_array = gaussian(image_array, sigma=settings.SKIMAGE_CONFIG["gaussian_sigma"])
-            
-            # Aplicar umbralización de Otsu
-            threshold = threshold_otsu(image_array)
-            binary = image_array > threshold
-            
-            # Operaciones morfológicas para limpiar
-            selem = disk(settings.SKIMAGE_CONFIG["morphology_disk_size"])
-            binary = opening(binary, selem)
-            binary = closing(binary, selem)
-            
-            # Convertir de vuelta a uint8
-            processed_image = (binary * 255).astype(np.uint8)
+            # Preprocesamiento simple para preservar texto
+            if settings.SKIMAGE_CONFIG.get("use_simple_preprocessing", False):
+                # Preprocesamiento mínimo - solo normalización
+                image_array = exposure.rescale_intensity(image_array)
+                processed_image = (image_array * 255).astype(np.uint8)
+                logger.info("Usando preprocesamiento simple para preservar texto")
+            else:
+                # Preprocesamiento completo
+                # Normalizar imagen (rápido)
+                image_array = exposure.rescale_intensity(image_array)
+                
+                # Aplicar filtro bilateral solo si está habilitado
+                if settings.SKIMAGE_CONFIG.get("enable_bilateral", True):
+                    image_array = denoise_bilateral(
+                        image_array, 
+                        sigma_color=settings.SKIMAGE_CONFIG["bilateral_sigma_color"], 
+                        sigma_spatial=settings.SKIMAGE_CONFIG["bilateral_sigma_spatial"]
+                    )
+                
+                # Mejorar contraste solo si está habilitado
+                if settings.SKIMAGE_CONFIG.get("enable_adaptive_hist", True):
+                    image_array = exposure.equalize_adapthist(image_array, clip_limit=0.03)
+                
+                # Aplicar filtro gaussiano suave (siempre, es rápido)
+                image_array = gaussian(image_array, sigma=settings.SKIMAGE_CONFIG["gaussian_sigma"])
+                
+                # Aplicar umbralización de Otsu (rápido)
+                threshold = threshold_otsu(image_array)
+                binary = image_array > threshold
+                
+                # Operaciones morfológicas solo si están habilitadas
+                if settings.SKIMAGE_CONFIG.get("enable_morphology", True):
+                    selem = disk(settings.SKIMAGE_CONFIG["morphology_disk_size"])
+                    binary = opening(binary, selem)
+                    binary = closing(binary, selem)
+                
+                # Convertir de vuelta a uint8
+                processed_image = (binary * 255).astype(np.uint8)
             
             return processed_image
             
@@ -167,7 +192,7 @@ class AdvancedImageProcessor:
         return layout_elements
     
     def extract_text_from_region(self, image: np.ndarray, bbox: List[int]) -> Tuple[str, float]:
-        """Extraer texto de una región específica"""
+        """Extraer texto de una región específica con múltiples intentos"""
         try:
             x1, y1, x2, y2 = bbox
             
@@ -177,27 +202,50 @@ class AdvancedImageProcessor:
             if roi.size == 0:
                 return "", 0.0
             
-            # Aplicar OCR
-            data = pytesseract.image_to_data(
-                roi, 
-                lang=settings.OCR_CONFIG["lang"],
-                config=settings.OCR_CONFIG["config"],
-                output_type=pytesseract.Output.DICT
-            )
+            # Intentar diferentes configuraciones de OCR
+            ocr_configs = [
+                settings.OCR_CONFIG["config"],  # Configuración principal
+                "--psm 6 --oem 3",              # PSM 6 (bloque uniforme)
+                "--psm 8 --oem 3",              # PSM 8 (palabra única)
+                "--psm 13 --oem 3",             # PSM 13 (línea de texto cruda)
+                "--psm 3 --oem 3"               # PSM 3 (detección automática)
+            ]
             
-            # Extraer texto y calcular confianza
-            text_parts = []
-            confidences = []
+            best_text = ""
+            best_confidence = 0.0
             
-            for i in range(len(data['text'])):
-                if int(data['conf'][i]) > 0:
-                    text_parts.append(data['text'][i])
-                    confidences.append(int(data['conf'][i]) / 100.0)
+            for config in ocr_configs:
+                try:
+                    # Aplicar OCR con configuración específica
+                    data = pytesseract.image_to_data(
+                        roi, 
+                        lang=settings.OCR_CONFIG["lang"],
+                        config=config,
+                        output_type=pytesseract.Output.DICT
+                    )
+                    
+                    # Extraer texto y calcular confianza
+                    text_parts = []
+                    confidences = []
+                    
+                    for i in range(len(data['text'])):
+                        if int(data['conf'][i]) > 0:
+                            text_parts.append(data['text'][i])
+                            confidences.append(int(data['conf'][i]) / 100.0)
+                    
+                    text = ' '.join(text_parts).strip()
+                    avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
+                    
+                    # Mantener el mejor resultado
+                    if len(text) > len(best_text) or (len(text) == len(best_text) and avg_confidence > best_confidence):
+                        best_text = text
+                        best_confidence = avg_confidence
+                        
+                except Exception as e:
+                    logger.warning(f"Error con configuración OCR {config}: {str(e)}")
+                    continue
             
-            text = ' '.join(text_parts).strip()
-            avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
-            
-            return text, avg_confidence
+            return best_text, best_confidence
             
         except Exception as e:
             logger.error(f"Error extrayendo texto de región: {str(e)}")
@@ -258,8 +306,18 @@ class AdvancedImageProcessor:
                     confidence=fig_elem["confidence"]
                 ))
             
-            # Extraer texto completo
-            full_text, _ = self.extract_text_from_region(processed_image, [0, 0, processed_image.shape[1], processed_image.shape[0]])
+            # Extraer texto completo (fallback si no hay elementos detectados)
+            full_text, full_confidence = self.extract_text_from_region(processed_image, [0, 0, processed_image.shape[1], processed_image.shape[0]])
+            
+            # Si no se detectaron elementos de layout, crear un bloque de texto con todo el contenido
+            if not layout_elements and full_text.strip():
+                logger.info("No se detectaron elementos de layout, creando bloque de texto completo")
+                text_blocks.append(TextBlock(
+                    text=full_text.strip(),
+                    confidence=full_confidence,
+                    bbox=[0, 0, processed_image.shape[1], processed_image.shape[0]],
+                    block_type="text"
+                ))
             
             processing_time = time.time() - start_time
             content_type = "application/pdf" if image_path.lower().endswith('.pdf') else "image/jpeg"
