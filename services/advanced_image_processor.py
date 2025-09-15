@@ -21,6 +21,7 @@ from skimage.restoration import denoise_bilateral
 
 from models import TextBlock, Table, Figure, ProcessingResult, ProcessingStatus
 from config import settings
+from services.invoice_parser import InvoiceParser
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class AdvancedImageProcessor:
     def __init__(self):
         """Inicializar el procesador avanzado"""
         self.layout_model = None
+        self.invoice_parser = InvoiceParser()
         self._setup_tesseract()
         self._load_layout_model()
     
@@ -319,6 +321,9 @@ class AdvancedImageProcessor:
                     block_type="text"
                 ))
             
+            # Parsear campos específicos de la factura
+            invoice_data = self.invoice_parser.parse_invoice(full_text)
+            
             processing_time = time.time() - start_time
             content_type = "application/pdf" if image_path.lower().endswith('.pdf') else "image/jpeg"
             
@@ -338,7 +343,8 @@ class AdvancedImageProcessor:
                     "tables_count": len(tables),
                     "figures_count": len(figures),
                     "is_pdf": image_path.lower().endswith('.pdf'),
-                    "processor": "scikit-image"
+                    "processor": "scikit-image",
+                    "invoice_parsing": invoice_data
                 }
             )
             
