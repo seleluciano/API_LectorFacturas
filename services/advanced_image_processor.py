@@ -321,8 +321,8 @@ class AdvancedImageProcessor:
                     block_type="text"
                 ))
             
-            # Parsear campos específicos de la factura
-            invoice_data = self.invoice_parser.parse_invoice(full_text)
+            # Parsear campos específicos de la factura (soporta múltiples facturas)
+            invoice_data = self.invoice_parser.parse_multiple_invoices(full_text)
             
             processing_time = time.time() - start_time
             content_type = "application/pdf" if image_path.lower().endswith('.pdf') else "image/jpeg"

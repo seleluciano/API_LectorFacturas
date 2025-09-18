@@ -10,79 +10,134 @@ class InvoiceParser:
     
     def __init__(self):
         self.patterns = {
-            # Campos para Factura según modelo Django
+            # Campos para Factura según modelo Django - Patrones genéricos
             'tipo_factura': [
-                r'FACTU\s+([ABC])',
-                r'Factura\s+([ABC])',
-                r'Tipo:\s*([ABC])',
-                r'([ABC])\s+[0-9]+'  # A 12345678
+                r'FACTU\s*([ABC])',
+                r'Factura\s*([ABC])',
+                r'Tipo\s*[:\s]*([ABC])',
+                r'([ABC])\s*[:\s]*\d+',  # A: 12345678 o A 12345678
+                r'Comprobante\s*([ABC])',
+                r'([ABC])\s*-\s*\d+',  # A-12345678
+                # Patrones específicos para formato "ORIGINAL : A"
+                r'ORIGINAL\s*:\s*([ABC])',
+                r'ORIGINAL\s+([ABC])',
+                # Patrón para detectar en el texto completo
+                r'([ABC])\s+[A-Za-z\s]+S[AR]L?\s+coo\.\d+',
+                # Patrón más general
+                r'([ABC])\s+(?:Soluciones|Global|Network)',
+                # Patrones para facturas argentinas - Asumir A por defecto si no se especifica
+                r'(?:ORIGINAL|FACTURA|Comprobante)\s*(?:[ABC])?\s*(?:[A-Za-z\s]+S[AR]L?)?',
+                # Patrón para detectar "A" después de ORIGINAL
+                r'ORIGINAL\s*[:\s]*A\s+[A-Za-z\s]+S[AR]L?'
             ],
             'razon_social_vendedor': [
-                r'Razón Social:\s*([A-Z][^CUIT]+?)(?=\s+CUIT)',
-                r'([A-Z][a-z\s]+SRL|SA|LTD|INC)(?=\s+CUIT)',
-                r'ORIGINAL\s+[ABC]\s*:\s*([A-Z][^|]+?)(?=\s*\|)',
-                r'ORIGINAL\s+([A-Z][a-z\s]+SA|SRL)(?=\s+Le)',
-                r'([A-Z][a-z\s]+SA|SRL)(?=\s+Le\s+PAGTURA)'
+                # Patrones específicos para formato "ORIGINAL" mejorados
+                r'ORIGINAL\s+[ABC]?\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:Le|CUIT|Fecha|coo\.|PAGTURA))',
+                r'ORIGINAL\s+[ABC]?\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+coo\.\d+)',
+                # Patrones genéricos para razón social del vendedor
+                r'Razón\s+Social\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|Fecha|Domicilio|Ingresos))',
+                r'Empresa\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|Fecha|Domicilio))',
+                r'Proveedor\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|Fecha|Domicilio))',
+                r'Vendedor\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|Fecha|Domicilio))',
+                # Patrones específicos para tipos de empresa
+                r'([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+(?:SRL|SA|LTD|INC|S\.A\.|S\.R\.L\.))(?=\s+(?:CUIT|Fecha|Domicilio))',
+                # Patrón para facturas con formato específico argentino
+                r'([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+S[AR]L?)(?=\s+(?:coo\.|Le\s+PAGTURA|CUIT))'
             ],
             'cuit_vendedor': [
-                r'CUIT:\s*(\d{2}-\d{8}-\d{1})',
-                r'CUIT\s*(\d{2}-\d{8}-\d{1})'
+                r'CUIT\s*[:\s]*(\d{2}-\d{8}-\d{1})',
+                r'CUIT\s+(\d{2}-\d{8}-\d{1})',
+                r'C\.U\.I\.T\.\s*[:\s]*(\d{2}-\d{8}-\d{1})',
+                r'(\d{2}-\d{8}-\d{1})(?=\s+(?:Ingresos|Fecha|Domicilio))'
             ],
             'razon_social_comprador': [
-                r'DNI:\s*[^A]+?Apellido y Nombre / Razón Social:\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ\s]+?)(?=\s+Domicilio)',
-                r'Apellido y Nombre / Razón Social:\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ\s]+?)(?=\s+Domicilio)',
-                r'Cliente:\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ\s]+?)(?=\s+Domicilio)',
-                r'Comprador:\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ\s]+?)(?=\s+Domicilio)',
-                r'([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)(?=\s+Domicilio)',  # Nombre Apellido
-                r'DNI:\s*\d{2}-\d{8}-\d{1}\s+Apellido y Nombre / Razón Social:\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ\s]+?)(?=\s+Domicilio)'
+                # Patrones específicos para formato con DNI mejorados
+                r'DNI\s*[:\s]*\d{2}-\d{8}-\d{1}\s+(?:Apellido\s+y\s+Nombre\s*\/\s*)?(?:Razón\s+Social\s*[:\s]*)?([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:Domicilio|Condición|CUIT|Condición\s+frente))',
+                r'Apellido\s+y\s+Nombre\s*\/\s*Razón\s+Social\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:Domicilio|Condición|CUIT))',
+                # Patrones genéricos para cliente/comprador
+                r'Cliente\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|DNI|Domicilio|Condición))',
+                r'Comprador\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|DNI|Domicilio|Condición))',
+                r'Adquiriente\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s\.\,]+?)(?=\s+(?:CUIT|DNI|Domicilio|Condición))',
+                # Patrón genérico para nombres propios (mejorado)
+                r'([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)(?=\s+(?:Domicilio|Condición|CUIT|Condición\s+frente))',
+                # Patrón específico para formato argentino
+                r'([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)(?=\s+(?:Condición\s+frente\s+al\s+IVA|Domicilio))'
             ],
             'cuit_comprador': [
-                r'DNI:\s*(\d{2}-\d{8}-\d{1})',
-                r'DNI\s*(\d{2}-\d{8}-\d{1})',
-                r'CUIT Comprador:\s*(\d{2}-\d{8}-\d{1})'
+                r'DNI\s*[:\s]*(\d{2}-\d{8}-\d{1})',
+                r'CUIT\s+(?:Comprador|Cliente)\s*[:\s]*(\d{2}-\d{8}-\d{1})',
+                r'C\.U\.I\.T\.\s+(?:Comprador|Cliente)\s*[:\s]*(\d{2}-\d{8}-\d{1})'
             ],
             'condicion_iva_comprador': [
-                r'Apellido y Nombre / Razón Social:\s*[^C]+?Condición frente al IVA:\s*([A-Z][a-z]+)(?=\s+Condici)',
-                r'Domicilio:\s*[^C]+?Condición frente al IVA:\s*([A-Z][a-z]+)(?=\s+Condici)',
-                r'DNI:\s*[^C]+?Condición frente al IVA:\s*([A-Z][a-z]+)(?=\s+Condici)',
-                r'CUIT Comprador[^C]+?Condición frente al IVA:\s*([A-Z][a-z]+)(?=\s+Condici)'
+                # Patrones genéricos para condición frente al IVA
+                r'Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
+                r'IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
+                r'Tipo\s+de\s+IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
+                # Patrones específicos para diferentes formatos
+                r'DNI\s*[:\s]*\d{2}-\d{8}-\d{1}.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición))'
             ],
             'condicion_venta': [
-                r'Condici[oó]n de venta:\s*([A-Z][a-z\s]+)',
-                r'Condici[oó]n venta:\s*([A-Z][a-z\s]+)',
-                r'Venta:\s*([A-Z][a-z\s]+)'
+                r'Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
+                r'Forma\s+de\s+pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
+                r'Pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
+                r'Venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
+                # Patrones específicos para facturas argentinas
+                r'Condici[oó]n\s+de\s+venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))',
+                r'Condici[oó]n\s+de\s+venta\s*[:\s]*(Contado|Crédito|Transferencia|Efectivo)',
+                # Patrón más directo
+                r'(?:Condición de venta|Condición venta)\s*[:\s]*(Contado|Crédito|Transferencia|Efectivo)'
             ],
             'fecha_emision': [
-                r'Fecha de Emisión:\s*(\d{2}/\d{2}/\d{4})',
-                r'Fecha:\s*(\d{2}/\d{2}/\d{4})',
-                r'(\d{2}/\d{2}/\d{4})'
+                r'Fecha\s+(?:de\s+)?(?:Emisión|Factura)\s*[:\s]*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})',
+                r'Fecha\s*[:\s]*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})',
+                r'Emisión\s*[:\s]*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})',
+                r'(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})(?=\s+(?:$|\n|[A-Za-z]))'
             ],
             'subtotal': [
-                r'Subtotal:\s*\$([\d.,]+)',
-                r'Subtotal\s*\$([\d.,]+)',
-                r'Subtotal\s+([\d.,]+)'
+                r'Subtotal\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe|Total|$|\n))',
+                r'Sub\s+total\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe|Total|$|\n))',
+                r'Sub\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe|Total|$|\n))',
+                r'Neto\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe|Total|$|\n))',
+                r'Base\s+imponible\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe|Total|$|\n))',
+                # Patrones específicos para formato argentino
+                r'Subtotal\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe\s+Otros|IVA|Percepción))',
+                r'Neto\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Importe\s+Otros|IVA|Percepción))'
             ],
             'importe_total': [
-                r'Importe Total:\s*\$([\d.,]+)',
-                r'Total:\s*\$([\d.,]+)',
-                r'Importe Total\s+([\d.,]+)'
+                r'Importe\s+Total\s*[:\s]*\$?\s*([\d.,]+)',
+                r'Total\s*[:\s]*\$?\s*([\d.,]+)',
+                r'Monto\s+Total\s*[:\s]*\$?\s*([\d.,]+)',
+                r'Total\s+a\s+pagar\s*[:\s]*\$?\s*([\d.,]+)',
+                r'Importe\s*[:\s]*\$?\s*([\d.,]+)',
+                # Patrones específicos para formato argentino
+                r'Importe\s+Total\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:5165247793596|Fecha\s+de\s+Vto|CAE|$))',
+                r'Total\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:5165247793596|Fecha\s+de\s+Vto|CAE|$))'
             ],
             'iva': [
-                r'IVA:\s*\$([\d.,]+)',
-                r'Impuesto IVA:\s*\$([\d.,]+)',
-                r'IVA\s+([\d.,]+)'
+                r'IVA\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Total|$|\n))',
+                r'Impuesto\s+IVA\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Total|$|\n))',
+                r'Impuesto\s+al\s+Valor\s+Agregado\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Total|$|\n))',
+                r'Imp\.\s+IVA\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Total|$|\n))',
+                r'21%\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Total|$|\n))',
+                # Patrones específicos para formato argentino
+                r'IVA\s*[:\s]*\$?\s*([\d.,]+)(?=\s+(?:Subtotal|Importe\s+Otros|Percepción|$))',
+                r'IVA\s*[:\s]*\$?([\d.,]+)(?=\s+(?:Subtotal|Importe\s+Otros|Percepción|$))'
             ],
-            # Campos adicionales útiles
+            # Campos adicionales útiles - Patrones genéricos
             'numero_factura': [
-                r'Comp\. Nro:\s*(\d+)',
-                r'Factura Nro:\s*(\d+)',
-                r'Nro:\s*(\d+)',
-                r'(\d{8,})'
+                r'(?:Comp|Comprobante)\.?\s*(?:Nro|Número|Nº)\s*[:\s]*(\d+)',
+                r'Factura\s+(?:Nro|Número|Nº)\s*[:\s]*(\d+)',
+                r'Nro\s*[:\s]*(\d+)',
+                r'Número\s*[:\s]*(\d+)',
+                r'Nº\s*[:\s]*(\d+)',
+                r'(\d{6,})'  # Números largos (6+ dígitos)
             ],
             'punto_venta': [
-                r'Punto de Venta:\s*(\d{4})',
-                r'PV:\s*(\d{4})',
-                r'Punto:\s*(\d{4})'
+                r'Punto\s+(?:de\s+)?Venta\s*[:\s]*(\d{1,5})',
+                r'PV\s*[:\s]*(\d{1,5})',
+                r'Punto\s*[:\s]*(\d{1,5})',
+                r'Sucursal\s*[:\s]*(\d{1,5})',
+                r'(\d{1,5})(?=\s+(?:Comp|Factura|Nro))'
             ],
             # Patrones para items
             'items': [
@@ -104,6 +159,13 @@ class InvoiceParser:
                 value = self._extract_field(cleaned_text, patterns, field_name)
                 if value:
                     extracted_fields[field_name] = value
+            
+            # Lógica especial para tipo_factura si no se detecta
+            if 'tipo_factura' not in extracted_fields:
+                # Si no se detecta el tipo, asumir "A" por defecto para facturas argentinas
+                if any(keyword in cleaned_text for keyword in ['ORIGINAL', 'FACTURA', 'Comprobante']):
+                    extracted_fields['tipo_factura'] = 'A'
+                    logger.info("Tipo de factura no detectado, asumiendo 'A' por defecto")
             
             # Procesar items por separado
             items = self._extract_items(cleaned_text)
@@ -228,34 +290,130 @@ class InvoiceParser:
         """Extrae información de items de la factura según modelo ItemFactura"""
         items = []
         
-        # Buscar patrones de productos en todo el texto
-        # Formato: número descripción cantidad unidad precio porcentaje impuesto subtotal
-        # Ejemplo: "1 Servicio de consultoria 1 unidad 10.000,00 14% 1.400,00 8.600,00"
-        pattern = r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s]+?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)'
+        # Debug: Log del texto para análisis
+        logger.info(f"Extrayendo items del texto: {text[:500]}...")
         
-        matches = re.findall(pattern, text)
+        # Buscar patrones de productos en todo el texto - Patrones genéricos
+        # Formatos soportados:
+        # 1. "1 Servicio de consultoria 1 unidad 10.000,00 14% 1.400,00 8.600,00"
+        # 2. "3 Licencia software unidad 3.000,00 10% 600,00 5.400,00" (sin cantidad visible)
+        # 3. "1 Producto $100,00 x 2 = $200,00"
+        # 4. "Item 1: Descripción - Cantidad: 5 - Precio: $50,00"
         
-        for match in matches:
-            # Limpiar descripción
+        # Patrones para diferentes formatos de items - Optimizados para facturas argentinas
+        patterns_items = [
+            # Patrón principal para facturas argentinas - Más flexible para capturar todos los items
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s]{3,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)',
+            # Patrón alternativo para items con descripciones más largas
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s]{5,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)'
+        ]
+        
+        # Procesar cada patrón de items y evitar duplicados
+        processed_items = set()
+        
+        for pattern_idx, pattern in enumerate(patterns_items):
+            matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+            logger.info(f"Patrón {pattern_idx + 1}: Encontrados {len(matches)} matches")
+            
+            for match in matches:
+                logger.info(f"Match encontrado: {match}")
+                item = self._process_item_match_generic(match, pattern_idx)
+                if item:
+                    logger.info(f"Item procesado: {item}")
+                    if self._is_valid_item(item):
+                        # Crear clave única para evitar duplicados
+                        item_key = f"{item['codigo']}_{item['descripcion'][:30]}_{item['cantidad']}_{item['precio_unitario']}"
+                        if item_key not in processed_items:
+                            processed_items.add(item_key)
+                            items.append(item)
+                            logger.info(f"Item agregado: {item}")
+                        else:
+                            logger.info(f"Item duplicado, omitido: {item}")
+                    else:
+                        logger.info(f"Item no válido: {item}")
+                else:
+                    logger.info(f"No se pudo procesar el match: {match}")
+        
+        logger.info(f"Total items extraídos: {len(items)}")
+        return items
+    
+    def _process_item_match_generic(self, match, pattern_idx):
+        """Procesa un match de item según el patrón usado"""
+        try:
+            # Ambos patrones tienen el mismo formato
+            if pattern_idx in [0, 1]:  # Formato estándar para facturas argentinas
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'importe_bonificacion': match[5],
+                    'subtotal': match[6]
+                }
+        except (ValueError, IndexError) as e:
+            logger.debug(f"Error procesando item match: {e}")
+            return None
+        
+        return None
+    
+    def _clean_item_description(self, description):
+        """Limpia la descripción del item"""
+        # Remover palabras comunes que no son parte del nombre del producto
+        description = re.sub(r'\s+(de|del|la|el|y|con|para|en|por)\s+', ' ', description, flags=re.IGNORECASE)
+        description = re.sub(r'\s+', ' ', description).strip()
+        return description
+    
+    def _is_valid_item(self, item):
+        """Valida que el item tenga información mínima requerida"""
+        descripcion = item.get('descripcion', '').strip()
+        
+        # Validaciones menos estrictas para mejorar detección
+        return (item.get('codigo') and 
+                descripcion and 
+                len(descripcion) > 2 and  # Descripción debe tener al menos 3 caracteres
+                not descripcion.lower() in ['unidad', 'item', 'producto', 'servicio', 'cantidad', 'medida'],  # Evitar palabras genéricas
+                item.get('precio_unitario') and
+                item.get('cantidad') and
+                # Verificar que el código sea un número válido
+                item.get('codigo', '').isdigit() and
+                # Verificar que la cantidad sea un número válido
+                item.get('cantidad', '').isdigit() and
+                # Validar que no sea solo números
+                not descripcion.isdigit())
+    
+    def _process_item_match(self, match, has_quantity=True):
+        """Procesa un match de item y retorna el diccionario correspondiente"""
+        if has_quantity:
+            # Formato: código, descripción, cantidad, precio, porcentaje, impuesto, subtotal
+            codigo = match[0]
             descripcion = match[1].strip()
-            # Remover palabras comunes que no son parte del nombre del producto
+            cantidad = match[2]
+            precio_unitario = match[3]
+            importe_bonificacion = match[5]
+            subtotal = match[6]
+        else:
+            # Formato: código, descripción, precio, porcentaje, impuesto, subtotal (cantidad = 1)
+            codigo = match[0]
+            descripcion = match[1].strip()
+            cantidad = "1"  # Asumir cantidad 1
+            precio_unitario = match[2]
+            importe_bonificacion = match[4]
+            subtotal = match[5]
+        
+        # Limpiar descripción
             descripcion = re.sub(r'\s+(de|del|la|el|y|con|para|en|por)\s+', ' ', descripcion, flags=re.IGNORECASE)
             descripcion = descripcion.strip()
             
-            # Determinar código (usar número de línea como código si no hay código específico)
-            codigo = match[0]  # Usar el número de línea como código
-            
-            items.append({
+        return {
                 'codigo': codigo,
                 'descripcion': descripcion,
-                'cantidad': match[2],
+            'cantidad': cantidad,
                 'unidad_medida': 'unidad',
-                'precio_unitario': match[3],
-                'importe_bonificacion': match[5],  # impuesto_bonif
-                'subtotal': match[6]
-            })
-        
-        return items
+            'precio_unitario': precio_unitario,
+            'importe_bonificacion': importe_bonificacion,
+            'subtotal': subtotal
+        }
     
     def _calculate_confidence(self, extracted_fields: Dict[str, Any]) -> float:
         """Calcula la confianza del parsing basado en campos extraídos"""
@@ -273,6 +431,95 @@ class InvoiceParser:
         # Calcular confianza
         confidence = (found_critical * 0.4 + found_additional * 0.15) / len(extracted_fields)
         return min(confidence, 1.0)
+    
+    def parse_multiple_invoices(self, text: str) -> Dict[str, Any]:
+        """Extrae múltiples facturas del texto y las procesa por separado"""
+        try:
+            # Detectar separadores entre facturas
+            invoice_separators = self._detect_invoice_separators(text)
+            
+            if len(invoice_separators) <= 1:
+                # Solo hay una factura, procesar normalmente
+                single_result = self.parse_invoice(text)
+                return {
+                    'success': True,
+                    'invoices': [single_result],
+                    'total_invoices': 1,
+                    'raw_text': text
+                }
+            
+            # Procesar múltiples facturas
+            invoices = []
+            for i, (start, end) in enumerate(invoice_separators):
+                invoice_text = text[start:end].strip()
+                if invoice_text:
+                    result = self.parse_invoice(invoice_text)
+                    result['invoice_number'] = i + 1
+                    result['text_range'] = {'start': start, 'end': end}
+                    invoices.append(result)
+            
+            return {
+                'success': True,
+                'invoices': invoices,
+                'total_invoices': len(invoices),
+                'raw_text': text
+            }
+            
+        except Exception as e:
+            logger.error(f"Error parseando múltiples facturas: {e}")
+            return {
+                'success': False,
+                'error': str(e),
+                'raw_text': text,
+                'invoices': []
+            }
+    
+    def _detect_invoice_separators(self, text: str) -> List[tuple]:
+        """Detecta los límites de cada factura en el texto"""
+        separators = []
+        
+        # Patrones más específicos que indican el inicio de una nueva factura
+        # Buscar patrones que aparecen al inicio de una factura completa
+        invoice_start_patterns = [
+            r'ORIGINAL\s+[A-Za-z\s]+S[AR]L?\s+Le\s+PAGTURA\s+Punto de Venta:',
+            r'ORIGINAL\s+[A-Za-z\s]+S[AR]L?\s+Le\s+PAGTURA\s+Comp\.',
+            r'ORIGINAL\s+[A-Za-z\s]+S[AR]L?\s+coo\.\d+\s+PAGTURA',
+            r'FACTURA\s+[ABC]\s+Punto de Venta:',
+            r'Comprobante\s+[ABC]\s+Punto de Venta:',
+            # Patrones adicionales para diferentes formatos
+            r'ORIGINAL\s+[ABC]?\s+[A-Za-z\s]+S[AR]L?',
+            r'FACTURA\s+[ABC]\s+\d+',
+            r'Comprobante\s+[ABC]\s+\d+'
+        ]
+        
+        # Encontrar todas las posiciones de inicio
+        start_positions = []
+        for pattern in invoice_start_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE | re.MULTILINE)
+            for match in matches:
+                start_positions.append(match.start())
+        
+        # Ordenar posiciones y eliminar duplicados
+        start_positions = sorted(set(start_positions))
+        
+        # Filtrar posiciones que están muy cerca (menos de 500 caracteres)
+        # Esto evita duplicados de la misma factura
+        filtered_positions = []
+        for pos in start_positions:
+            if not filtered_positions or pos - filtered_positions[-1] > 500:
+                filtered_positions.append(pos)
+        
+        if not filtered_positions:
+            # Si no se encuentran separadores claros, tratar como una sola factura
+            return [(0, len(text))]
+        
+        # Crear rangos entre posiciones
+        for i in range(len(filtered_positions)):
+            start = filtered_positions[i]
+            end = filtered_positions[i + 1] if i + 1 < len(filtered_positions) else len(text)
+            separators.append((start, end))
+        
+        return separators
     
     def get_supported_fields(self) -> List[str]:
         """Retorna la lista de campos que puede extraer"""

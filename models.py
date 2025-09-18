@@ -29,6 +29,16 @@ class Figure(BaseModel):
     figure_type: str = Field(..., description="Tipo de figura (image, chart, diagram, etc.)")
     confidence: float = Field(..., description="Confianza de la detección")
 
+class SingleInvoiceResult(BaseModel):
+    """Modelo para una factura individual parseada"""
+    success: bool = Field(..., description="Si el parsing fue exitoso")
+    invoice_number: Optional[int] = Field(None, description="Número de factura (1, 2, 3...)")
+    extracted_fields: Dict[str, Any] = Field(default={}, description="Campos extraídos de la factura")
+    raw_text: str = Field(default="", description="Texto de esta factura específica")
+    parsing_confidence: float = Field(default=0.0, description="Confianza del parsing")
+    text_range: Optional[Dict[str, int]] = Field(None, description="Rango de texto en el documento original")
+    error: Optional[str] = Field(None, description="Error si el parsing falló")
+
 class ProcessingResult(BaseModel):
     """Modelo para el resultado del procesamiento"""
     filename: str = Field(..., description="Nombre del archivo procesado")
