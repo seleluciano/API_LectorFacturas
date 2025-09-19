@@ -1,0 +1,1839 @@
+{
+  "batch_info": {
+    "total_files": 30,
+    "successful_files": 30,
+    "failed_files": 0,
+    "total_processing_time": 66.47248792648315,
+    "timestamp": "2025-09-18 23:38:22"
+  },
+  "performance_metrics": {
+    "throughput": 0.4513145353184196,
+    "avg_processing_time": 8.507140882809956,
+    "avg_confidence_score": 0.07274633699633701,
+    "success_rate": 1.0,
+    "total_documents_processed": 30,
+    "total_processing_time": 66.47248792648315,
+    "accuracy_metrics": {
+      "avg_field_accuracy": 0.7952380952380953,
+      "avg_cer": 1.0,
+      "avg_wer": 1.0,
+      "total_correct_fields": 334,
+      "total_missing_fields": 17,
+      "total_incorrect_fields": 37
+    }
+  },
+  "individual_results": [
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_12.png",
+      "filename": "factura_12.png",
+      "success": true,
+      "processing_time": 11.709116458892822,
+      "extracted_fields": {
+        "razon_social_vendedor": "Digital Future Ltda",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Lucia Martinez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "4.230,00",
+        "importe_total": "6.823,30",
+        "iva": "888,30",
+        "numero_factura": "91569716",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Mantenimiento mensual",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "1.500,00",
+            "importe_bonificacion": "270,00",
+            "subtotal": "4.230,00"
+          }
+        ],
+        "deuda_impositiva": "2.593,30"
+      },
+      "extracted_text": "ORIGINAL   Digital Future Ltda Razón Social: Digital Future Ltda Domicilio Comercial:Calle Entre Rios 400 Condición frente al IVA: Responsable Inscripto 1101/2025   Período Facturado Desde:   Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 A | FACTURA coD.001       Punto de Venta: 0004 Comp.Nro: 91569716 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 26033075146 Fecha de Inicio de Actividades: 01/01/2020         Condición frente al IVA: Monotributista Condición de venta: Contado DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Lucia Martinez Domicilio: Belgrano 100                 [E cantidad   |U, Medida| — PrecioUnit —— — imp.Bonif ‘Subtotal             1 Mantenimiento mensual 3 unidad 1.500,00 6% 270,00 4.230,00   Percepción IIBB: $ 1.500,00 IVA: $ 888,30 Subtotal: $4.230,00 Importe Otros Tributos: $205,00 Importe Total: $6.823,30           Comprobante Autorizado   5165247793596 Fecha de Vto. de CAE: 01/05/2025   Pág. 1/1 Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 11.709116458892822,
+        "throughput": 0.08540354035342448,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 582707,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_11.png",
+      "filename": "factura_11.png",
+      "success": true,
+      "processing_time": 11.915148735046387,
+      "extracted_fields": {
+        "razon_social_vendedor": "Global Networks SRL",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Networks SRL",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "19.580,00",
+        "importe_total": "25.304,80",
+        "iva": "4.111,80",
+        "numero_factura": "92075458",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitación",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "200,00",
+            "subtotal": "4.800,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Servicio consultoria",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "1.100,00",
+            "subtotal": "8.900,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "120,00",
+            "subtotal": "5.880,00"
+          }
+        ],
+        "deuda_impositiva": "5.724,80"
+      },
+      "extracted_text": "ORIGINAL   Global Networks SRL Razón Social: Global Networks SRL Domicilio Comercial:Calle Libertad 800 Período Facturado Desde: 01/01/2025   Condición frente al IVA: Responsable Inscripto A coD.001 FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025       CUIT: 30-99999999-7 Ingresos Brutos: 22037015360 Fecha de Inicio de Actividades: 01/01/2020   Hasta: 31/12/2025 Comp. Nro: 92075458 Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Condición frente al IVA: Responsable Inscripto Condición de venta: Contado Apellido y Nombre / Razón Social: Sofía Ruiz Domicitio: Calle Tucumán 700                                         [ Producto / servicio Ju. medida] Precioun [Bont] imp. Bont. Subtotal 1 Capacitación 1 unidad 5.000,00 4% 200,00 4.800,00 2 Servicio de consultoria 1 unidad 10.000,00 11% 1.100,00 8.900,00 3 Licencia software 2 unidad 3.000,00 2% 120,00 5.880,00 Percepción IIBB: $ 1.500,00 IVA: $4.111,80 Subtotal: $19.580,00 Importe Otros Tributos: $113,00 Importe Total: $25.304,80 Pág. 1/1 5165247793596       Fecha de Vto. de CAE: 01/05/2025 Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.8571428571428571,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 11.9140944480896,
+        "throughput": 0.08393420115620688,
+        "total_fields": 14,
+        "correct_fields": 12,
+        "missing_fields": 0,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 594934,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_1.png",
+      "filename": "factura_1.png",
+      "success": true,
+      "processing_time": 12.07254672050476,
+      "extracted_fields": {
+        "razon_social_vendedor": "Digital Future Ltda",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Future Ltda",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "34.130,00",
+        "importe_total": "43.239,30",
+        "iva": "7.167,30",
+        "numero_factura": "13225316",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "420,00",
+            "subtotal": "5.580,00"
+          },
+          {
+            "codigo": "4",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "0,00",
+            "subtotal": "16.000,00"
+          }
+        ],
+        "deuda_impositiva": "9.109,30"
+      },
+      "extracted_text": "ORIGINAL   A   Digital Future Ltda co0.001     Razón Social: Digital Future Ltda Domicilio Comercial:Rivadavia 1300 Condición frente al IVA: Responsable Inscripto Período Facturado Desde:   FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 22432098707 Fecha de Inicio de Actividades: 01/01/2020 1101/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025   Comp. Nro: 13225316         Condición frente al IVA: Monotributista Condición de venta: Contado DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Laura Gomez Domlelllo: Cabildo 1000                               [ Producto / servicio Ju. medida] Precioun [Bont] imp. Bont. Subtotal 1 Soporte técnico 5, unidad 2.000,00 15% 1.500,00 8.500,00 2 Licencia software 2 unidad 3.000,00 7% 420,00 5.580,00 3 Mantenimiento mensual y unidad 1.500,00 10% 450,00 4.050,00 4 Desarrollo de software 2 unidad 8.000,00 0% 0,00 16.000,00   Percepción IIBB: $ 1.500,00 IVA: $7.167,30 Subtotal: $34.130,00 Importe Otros Tributos: $442,00 Importe Total: $43.239,30           Pág. 1/1   Comprobante Autorizado   Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion   5165247793596 Fecha de Vto. de CAE: 01/05/2025",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.8571428571428571,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 12.071547746658325,
+        "throughput": 0.08283941885387666,
+        "total_fields": 14,
+        "correct_fields": 12,
+        "missing_fields": 0,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 598407,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_10.png",
+      "filename": "factura_10.png",
+      "success": true,
+      "processing_time": 12.42017650604248,
+      "extracted_fields": {
+        "razon_social_vendedor": "Advanced Systems SRL",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Sofía Ruiz",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "46.330,00",
+        "importe_total": "58.024,30",
+        "iva": "9.729,30",
+        "numero_factura": "18584055",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "1.120,00",
+            "subtotal": "14.880,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Implementación red",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "2.250,00",
+            "subtotal": "12.750,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Servicio consultoría",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "100,00",
+            "subtotal": "9.900,00"
+          },
+          {
+            "codigo": "4",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "1.200,00",
+            "subtotal": "8.800,00"
+          }
+        ],
+        "deuda_impositiva": "11.694,30"
+      },
+      "extracted_text": "ORIGINAL   Advanced Systems SRL Razón Social: Advanced Systems SRL Domicilio Comercial:Cabildo 1000 Condición frente al IVA: Responsable Inscripto A   coD.001 FACTURA     Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 25703268023 Fecha de Inicio de Actividades: 01/01/2020 Punto de Venta: 0004 Comp.Nro: 18584055   Período Facturado Desde:   1101/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Sofía Ruiz Condición frente al IVA: Responsable Inscripto Condición de venta: Contado Calle Salta 600                                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. ‘Subtotal 1 Desarrollo de software 2 unidad 8.000,00 7% 1.120,00 14.880,00 2 Implementación de red 3 unidad 5.000,00 15% 2.250,00 12.750,00 3 Servicio de consultoría 1 unidad 10.000,00 1% 100,00 9.900,00 4 Soporte técnico 5 unidad 2.000,00 12% 1.200,00 8.800,00 Percepción IIBB: $ 1.500,00 IVA: $9.729,30 Subtotal: $46.330,00 Importe Otros Tributos: $465,00 Importe Total: $58.024,30 ARCA Pág. 111 5165247793596 ie Fecha de Vto. de CAE: 01/05/2025 Comprobante Autorizado   Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 12.41917610168457,
+        "throughput": 0.08052063935741738,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 603878,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_14.png",
+      "filename": "factura_14.png",
+      "success": true,
+      "processing_time": 9.463769674301147,
+      "extracted_fields": {
+        "razon_social_vendedor": "Innovatech Ltda",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Ana Sanchez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "20.680,00",
+        "importe_total": "27.393,80",
+        "iva": "4.342,80",
+        "numero_factura": "12765010",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "1.320,00",
+            "subtotal": "10.680,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Servicio consultoria",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "0,00",
+            "subtotal": "10.000,00"
+          }
+        ],
+        "deuda_impositiva": "6.713,80"
+      },
+      "extracted_text": "ORIGINAL A Innovatech Ltda condor | FACTURA Comp. Nro: 12765010 Punto de Venta: 0004 Fecha de Emisión: 27/04/2025         Razón Social: Innovatech Ltda CUIT: 30-99999999-7 Ingresos Brutos: 22422537299 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle Viamonte 800 Condición frente al IVA: Responsable Inscripto 1/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025     Período Facturado Desde: DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Ana Sanchez Domicilio: Av. Santa Fe 1100         Condición frente al IVA: Monotributista Condición de venta: Contado                               [ Producto / servicio Ju. medida] Precioun [Bont] imp. Bont. Subtotal 1 Instalación de servidores 1 unidad 12.000,00 11% 1.320,00 10.680,00 2 Servicio de consultoria 1 unidad 10.000,00 0% 0,00 10.000,00   Percepción IIBB: $ 1.500,00 IVA: $4.342,80 Subtotal: $20.680,00 Importe Otros Tributos: $871,00 Importe Total: $27.393,80         5165247793596 Fecha de Vto. de CAE: 01/05/2025   Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 9.463769674301147,
+        "throughput": 0.10566613880254276,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 586316,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_15.png",
+      "filename": "factura_15.png",
+      "success": true,
+      "processing_time": 9.40864872932434,
+      "extracted_fields": {
+        "razon_social_vendedor": "Innovative Technologies SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Technologies SA",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.250,00",
+        "importe_total": "30.586,50",
+        "iva": "4.882,50",
+        "numero_factura": "92040568",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "700,00",
+            "subtotal": "9.300,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Implementación red",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "1.050,00",
+            "subtotal": "13.950,00"
+          }
+        ],
+        "deuda_impositiva": "7.336,50"
+      },
+      "extracted_text": "ORIGINAL : : A RA Innovative Technologies SA o».001 FACTU Comp. Nro: 92040568 Punto de Venta: 0004 Fecha de Emisión: 27/04/2025     Razón Social: Innovative Technologies SA CUIT: 30-99999999-7 Ingresos Brutos: 27017176922 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle Libertad 800 Condición frente al IVA: Responsable Inscripto                                           Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Soclal: Ricardo Herrera Condición frente al IVA: Responsable Inscripto Domlclllo: Palermo 350 Condición de venta: Contado [ Producto servicio — [u,mecida] — precioune —[xonit] imp. Bonte Subtotal 1 Soporte técnico 5 unidad 2.000,00 7% 700,00 9.300,00 2 Implementación de red 3 unidad 5.000,00 7% 1.050,00 13.950,00   Percepción IIBB: $ 1.500,00 IVA: $4.882,50 Subtotal: $23.250,00 Importe Otros Tributos: $954,00 Importe Total: $30.586,50         5165247793596 Fecha de Vto. de CAE: 01/05/2025   Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07857142857142858,
+      "metrics": {
+        "confidence_score": 0.99,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 9.407651424407959,
+        "throughput": 0.10629645539433152,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 1,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 588734,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_13.png",
+      "filename": "factura_13.png",
+      "success": true,
+      "processing_time": 9.843000411987305,
+      "extracted_fields": {
+        "razon_social_vendedor": "Global Solutions SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Pedro Fernandez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "40.520,00",
+        "importe_total": "50.700,20",
+        "iva": "8.509,20",
+        "numero_factura": "42448248",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Análisis datos",
+            "cantidad": "4",
+            "unidad_medida": "unidad",
+            "precio_unitario": "4.000,00",
+            "importe_bonificacion": "1.280,00",
+            "subtotal": "14.720,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "1.320,00",
+            "subtotal": "10.680,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "700,00",
+            "subtotal": "9.300,00"
+          },
+          {
+            "codigo": "4",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "180,00",
+            "subtotal": "5.820,00"
+          }
+        ],
+        "deuda_impositiva": "10.180,20"
+      },
+      "extracted_text": "ORIGINAL   A   Global Solutions SA 00.001     Razón Social: Global Solutions SA Domicilio Comercial:Calle Viamonte 800 Condición frente al IVA: Responsable Inscripto Período Facturado Desde:   FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 25326572360 Fecha de Inicio de Actividades: 01/01/2020 1101/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025   Comp. Nro: 42448248         Condición frente al IVA: Monotributista Condición de venta: Contado DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Pedro Fernandez Domicilio: Av. La Plata 800                               [ Producto / servicio Ju. medida] Precioun [Bont] imp. Bont. Subtotal 1 Análisis de datos 4 unidad 4.000,00 8% 1.280,00 14.720,00 2 Instalación de servidores 1 unidad 12.000,00 11% 1.320,00 10.680,00 3 Soporte técnico 5 unidad 2.000,00 7% 700,00 9.300,00 4 Licencia software 2 unidad 3.000,00 3% 180,00 5.820,00   Percepción IIBB: $ 1.500,00 IVA: $8.509,20 Subtotal: $40.520,00 Importe Otros Tributos: $171,00 Importe Total: $50.700,20           Pág. 1/1   Comprobante Autorizado   Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion   5165247793596 Fecha de Vto. de CAE: 01/05/2025",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 9.84093952178955,
+        "throughput": 0.10161631394907225,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 601556,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_16.png",
+      "filename": "factura_16.png",
+      "success": true,
+      "processing_time": 9.16999626159668,
+      "extracted_fields": {
+        "razon_social_vendedor": "NextGen Solutions SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Juan Pérez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "4.300,00",
+        "importe_total": "7.448,00",
+        "iva": "903,00",
+        "numero_factura": "81330691",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitacién",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "700,00",
+            "subtotal": "4.300,00"
+          }
+        ],
+        "deuda_impositiva": "3.148,00"
+      },
+      "extracted_text": "ORIGINAL   NextGen Solutions SA Razón Social: NextGen Solutions SA Domicilio Comercial:Av. Córdoba 450 Condición frente al IVA: Responsable Inscripto   Período Facturado Desde:   1/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 A | FACTURA coD.001       Punto de Venta: 0004 Comp. Nro: 81330691 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 20838973145 Fecha de Inicio de Actividades: 01/01/2020         Condición frente al IVA: Monotributista Condición de venta: Contado DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Juan Pérez Domicilio: Calle Viamonte 800               [E cantidad     |U, Medida| — PrecioUnit —— — imp.Bonif ‘Subtotal             1 Capacitacién 1 unidad 5.000,00 14% 700,00 4.300,00   Percepción IIBB: $ 1.500,00 IVA: $ 903,00 Subtotal: $4.300,00 Importe Otros Tributos: $745,00 Importe Total: $7.448,00           Comprobante Autorizado   5165247793596 Fecha de Vto. de CAE: 01/05/2025   Pág. 1/1 Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 9.169089078903198,
+        "throughput": 0.10906208799965324,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 582778,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_17.png",
+      "filename": "factura_17.png",
+      "success": true,
+      "processing_time": 7.751581192016602,
+      "extracted_fields": {
+        "razon_social_vendedor": "Modern Solutions SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Luis Ramirez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "5.760,00",
+        "importe_total": "8.754,60",
+        "iva": "1.209,60",
+        "numero_factura": "66618902",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "240,00",
+            "subtotal": "5.760,00"
+          }
+        ],
+        "deuda_impositiva": "2.994,60"
+      },
+      "extracted_text": "ORIGINAL . A RA Modern Solutions SA ens] Comp. Nro: 66618902 Punto de Venta: 0004 Fecha de Emisión: 27/04/2025         Razón Social: Modern Solutions SA CUIT: 30-99999999-7 Ingresos Brutos: 30571354137 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle Entre Rios 400 Condición frente al IVA: Responsable Inscripto 1/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025     Período Facturado Desde: DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Luis Ramirez Domicilio: Pueyrredón 1400         Condición frente al IVA: Responsable Inscripto Condición de venta: Contado                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. ‘Subtotal 1 Licencia software 2 unidad 3.000,00 4% 240,00 5.760,00   Percepción IIBB: $ 1.500,00 IVA: $ 1.209,60 Subtotal: $5.760,00 Importe Otros Tributos: $285,00 Importe Total: $8.754,60         5165247793596 Fecha de Vto. de CAE: 01/05/2025   Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.750575304031372,
+        "throughput": 0.1290226803524974,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 583506,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_19.png",
+      "filename": "factura_19.png",
+      "success": true,
+      "processing_time": 8.1242835521698,
+      "extracted_fields": {
+        "razon_social_vendedor": "onsultora IT SRL",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Álvaro Fernandez",
+        "cuit_comprador": "20-12345678-9",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "20.095,00",
+        "importe_total": "26.700,95",
+        "iva": "4.219,95",
+        "numero_factura": "38831303",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitación",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "850,00",
+            "subtotal": "4.150,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "2.280,00",
+            "subtotal": "9.720,00"
+          }
+        ],
+        "deuda_impositiva": "6.605,95"
+      },
+      "extracted_text": "ORIGINAL Consultora IT SRL Le PAGTURA Razón Social: Consultora IT SRL         Punto de Venta: 0004 Comp.Nro: 38831303 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 27927905794 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle Tucumán 700 Condición frente al IVA: Responsable Inscripto 1/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025     Período Facturado Desde:         DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Álvaro Fernandez Condición frente al IVA: Monotributista Domiciiio: Maipú 200 Condicién de venta: Contado                               [ Producto / Servicio Ju. medida] Preclount. [Bont] imp. Bont. Subtotal 1 Capacitación 1 unidad 5.000,00 17% 850,00 4.150,00 2 Instalación de servidores 1 unidad 12.000,00 19% 2.280,00 9.720,00 3 Consultoría en IT. + unidad 7.500,00 17% 1.275,00 6.225,00   Percepción IIBB: $ 1.500,00 IVA: $4.219,95 Subtotal: $20.095,00 Importe Otros Tributos: $886,00 Importe Total: $26.700,95           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.08461538461538462,
+      "metrics": {
+        "confidence_score": 0.94,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.123247146606445,
+        "throughput": 0.12310348090514006,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 2,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 593420,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_2.png",
+      "filename": "factura_2.png",
+      "success": true,
+      "processing_time": 8.361588954925537,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Carlos López",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.895,00",
+        "importe_total": "31.227,95",
+        "iva": "5.017,95",
+        "numero_factura": "84677985",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "600,00",
+            "subtotal": "5.400,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Mantenimiento mensual",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "1.500,00",
+            "importe_bonificacion": "405,00",
+            "subtotal": "4.095,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "1.600,00",
+            "subtotal": "14.400,00"
+          }
+        ],
+        "deuda_impositiva": "7.332,95"
+      },
+      "extracted_text": "ORIGINAL Digital Experts SRL echo] FACTURA Razón Social: Digital Experts SRL         Punto de Venta: 0004 Comp.Nro: 84677985 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 23151658947 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Corrientes 850 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Carlos López Condición frente al IVA: Monotributista Domicilio: Calle Montevideo 1200 Condición de venta: Contado                               [ Producto / servicio — [u. — preciount [ont] imp. Bont. Subtotal 1 Licencia software 2 unidad 3.000,00 10% 600,00 5.400,00 2 Mantenimiento mensual 3 unidad 1.500,00 9% 405,00 4.095,00 3 Desarrollo de software 2 unidad 8.000,00 10% 1.600,00 14.400,00   Percepción IIBB: $ 1.500,00 IVA: $5.017,95 Subtotal: $23.895,00 Importe Otros Tributos: $815,00 Importe Total: $31.227,95           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07857142857142858,
+      "metrics": {
+        "confidence_score": 0.9724999999999999,
+        "field_accuracy": 0.8571428571428571,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.361588954925537,
+        "throughput": 0.11959449398800366,
+        "total_fields": 14,
+        "correct_fields": 12,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 595675,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_18.png",
+      "filename": "factura_18.png",
+      "success": true,
+      "processing_time": 8.89185094833374,
+      "extracted_fields": {
+        "razon_social_vendedor": "Estrategia Digital SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Daniela Garcia",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "36.420,00",
+        "importe_total": "46.053,20",
+        "iva": "7.648,20",
+        "numero_factura": "28863171",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "480,00",
+            "subtotal": "11.520,00"
+          },
+          {
+            "codigo": "4",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "640,00",
+            "subtotal": "15.360,00"
+          }
+        ],
+        "deuda_impositiva": "9.633,20"
+      },
+      "extracted_text": "ORIGINAL   Estrategia Digital SA Razón Social: Estrategia Digital SA Domicilio Comercial:Av. Santa Fe 1100 Período Facturado Desde: 01/01/2025 Condición frente al IVA: Responsable Inscripto Hasta: 31/12/2025 A   coD.001     FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 24950793549 Fecha de Inicio de Actividades: 01/01/2020 Comp. Nro: 28863171   Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Condición frente al IVA: Responsable Inscripto Condición de venta: Contado Apellido y Nombre / Razón Social: Daniela Garcia Domicilio: Calle Viamonte 800                                               [ Producto / servicio a Cantidad — |U. Medida] PrecioUnit —|%Bonif]__ imp. Boni. ‘Subtotal 1 Mantenimiento mensual 3 unidad — 1.500,00 8% 360,00 4.140,00 2 Instalación de servidores 1 unidad 12.000,00 4% 480,00 11.520,00 3 Licencia software 2) unidad 3.000,00 10% 600,00 5.400,00 4 Desarrollo de software 2 unidad 8.000,00 4% 640,00 15.360,00 Percepción IIBB: $ 1.500,00 IVA: $7.648,20 Subtotal: $36.420,00 Importe Otros Tributos: $485,00 Importe Total: $46.053,20 Pág. 1/1 5165247793596 Fecha de Vto. de CAE: 01/05/2025 Comprobante Autorizado   Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07333333333333333,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.9285714285714286,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.890840530395508,
+        "throughput": 0.11247530495921684,
+        "total_fields": 14,
+        "correct_fields": 13,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 603944,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_20.png",
+      "filename": "factura_20.png",
+      "success": true,
+      "processing_time": 7.511826515197754,
+      "extracted_fields": {
+        "razon_social_vendedor": "Consultora IT SRL",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Juan Pérez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Monotributista",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "29.980,00",
+        "importe_total": "38.123,80",
+        "numero_factura": "51549941",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "3",
+            "descripcion": "Análisis datos",
+            "cantidad": "4",
+            "unidad_medida": "unidad",
+            "precio_unitario": "4.000,00",
+            "importe_bonificacion": "320,00",
+            "subtotal": "15.680,00"
+          }
+        ],
+        "deuda_impositiva": "8.143,80"
+      },
+      "extracted_text": "ORIGINAL   Consultora IT SRL Razón Social: Consultora IT SRL Domicilio Comercial:Av. Caseros 600 Condición frente al IVA: Responsable Inscripto 1/01/2025     Período Facturado Desde: A coD.001       Hasta: 31/12/2025 FACTURA Punto de Venta: 0004 Comp. Nro: 51549941 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 26963539996 Fecha de Inicio de Actividades: 01/01/2020 Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Condición frente al IVA: Monotributista Condición de venta: Contado Apellido y Nombre / Razón Social: Juan Pérez Domicilio: Pueyrredón 1400                                           [ Producto / servicio — [u. — preciount [ont] imp. Bont. Subtotal 1 Soporte técnico a unidad 2.000,00 17% 1.700,00 8.300,00 2 Consultoría en IT. unidad 7.500,00 20% 1.500,00 6.000,00 3 Análisis de datos 4 unidad 4.000,00 2% 320,00 15.680,00 Percepción IIBB: $ 1.500,00 IVA: $6.295,80 ‘Subtotal: $29.980,00 Importe Otros Tributos: $348,00 Importe Total: $38.123,80 Pág. 1/1 5165247793596 Fecha de Vto. de CAE: 01/05/2025 Comprobante Autorizado   Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.8571428571428571,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.511826515197754,
+        "throughput": 0.13312341518761422,
+        "total_fields": 14,
+        "correct_fields": 12,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 593085,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_21.png",
+      "filename": "factura_21.png",
+      "success": true,
+      "processing_time": 7.490278244018555,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Susana Ruiz",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "19.980,00",
+        "importe_total": "19.980,00",
+        "numero_factura": "52640751",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "1.020,00",
+            "subtotal": "4.980,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Digital Experts SRL cotas] FACTURA Razón Social: Digital Experts SRL         Punto de Venta: 0004 Comp. Nro: 52640751 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 20220667500 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Caballito 400 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Susana Ruiz Condición frente al IVA: Exento Belgrano 100 Condición de venta: Contado                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Implementación de red a, unidad 5.000,00 0% 0,00 15.000,00 2 Licencia software 2 unidad 3.000,00 17% 1.020,00 4.980,00   Subtotal: $19.980,00 Importe Otros Tributos: $0,00 Importe Total: $19.980,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07916666666666668,
+      "metrics": {
+        "confidence_score": 0.8324999999999999,
+        "field_accuracy": 0.6428571428571429,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.490278244018555,
+        "throughput": 0.13350638887127605,
+        "total_fields": 14,
+        "correct_fields": 9,
+        "missing_fields": 2,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 580272,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_22.png",
+      "filename": "factura_22.png",
+      "success": true,
+      "processing_time": 7.360640287399292,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Future Ltda",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.400,00",
+        "importe_total": "23.400,00",
+        "numero_factura": "27446769",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitación",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "600,00",
+            "subtotal": "4.400,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL   Razón Social: Digital Período Facturado B   Digital Future Ltda 00.006     Future Ltda Domicilio Comercial:Avenida San Juan 850 Condición frente al IVA: Responsable Inscripto Desde: 01/01/2025 Hasta: 31/12/2025   FACTURA Punto de Venta: 0004 Comp.Nro: 27446769 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 28304719979 Fecha de Inicio de Actividades: 01/01/2020   Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Condición frente al IVA: Apellido y Nombre / Razón Social: Sofía Ruiz Exento Domlclllo: Calle Junín 500 Condición de venta: Contado                                           [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Capacitación 1 unidad 5.000,00 12% 600,00 4.400,00 2 Desarrollo de software unidad 8.000,00 6% 960,00 15.040,00 3 Mantenimiento mensual unidad 1.500,00 12% 540,00 3.960,00 ‘Subtotal: $23.400,00 Importe Otros Tributos: $0,00 Importe Total: $23.400,00 Pág. 1/1 5165247793596     Comprobante Autorizado   Fecha de Vto. de CAE: 01/05/2025 Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07916666666666668,
+      "metrics": {
+        "confidence_score": 0.8324999999999999,
+        "field_accuracy": 0.5714285714285714,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.360640287399292,
+        "throughput": 0.1358577461952466,
+        "total_fields": 14,
+        "correct_fields": 8,
+        "missing_fields": 2,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 584545,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_23.png",
+      "filename": "factura_23.png",
+      "success": true,
+      "processing_time": 7.766291379928589,
+      "extracted_fields": {
+        "razon_social_vendedor": "Commerce Solutions SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Marcela Pérez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "35.150,00",
+        "importe_total": "35.150,00",
+        "numero_factura": "69042991",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "900,00",
+            "subtotal": "9.100,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Mantenimiento mensual",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "1.500,00",
+            "importe_bonificacion": "900,00",
+            "subtotal": "3.600,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "0,00",
+            "subtotal": "16.000,00"
+          },
+          {
+            "codigo": "4",
+            "descripcion": "Consultoría IT",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "7.500,00",
+            "importe_bonificacion": "1.050,00",
+            "subtotal": "6.450,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL E-Commerce Solutions SA a PAGTURA         Punto de Venta: 0004 Comp. Nro: 69042991             Razón Social: E-Commerce Solutions SA Fecha de Emisión: 27/04/2025 Domicilio Comercial:Calle Junin 500 CUIT: 30-99999999-7 Ingresos Brutos: 23437692556 Condición frente al IVA: Responsable Inscripto Fecha de Inicio de Actividades: 01/01/2020 Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Marcela Pérez Condición frente al IVA: Exento Domicitio: San Juan 500 Condición de venta: Contado                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. Subtotal 1 Soporte técnico 5 unidad 2.000,00 9% 900,00 9.100,00 2 Mantenimiento mensual 3 unidad 1.500,00 20% 900,00 3.600,00 3 Desarrollo de software 2 unidad 8.000,00 0% 0,00 16.000,00 4 Consultoría en IT 1 unidad 7.500,00 14% 1.050,00 6.450,00   Subtotal: $35.150,00 Importe Otros Tributos: $0,00 Importe Total: $35.150,00             5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.76488184928894,
+        "throughput": 0.1287849602105116,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 0,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 591081,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_24.png",
+      "filename": "factura_24.png",
+      "success": true,
+      "processing_time": 8.408009052276611,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Marta Rodriguez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Consumidor Final",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "4.980,00",
+        "importe_total": "4.980,00",
+        "numero_factura": "92960753",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "1.020,00",
+            "subtotal": "4.980,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Tech Systems SA Be FAGTURA Razón Social: Tech Systems SA         Punto de Venta: 0004 Comp.Nro: 92960753 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 30840362443 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle 25 de Mayo 950 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Marta Rodriguez Condición frente al IVA: Consumidor Final Domicilio: San Telmo 250 Condición de venta: Contado                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. Subtotal 1 Licencia software 2 unidad 3.000,00 17% 1.020,00 4.980,00   Subtotal: $4.980,00 Importe Otros Tributos: $0,00 Importe Total: $4.980,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07307692307692308,
+      "metrics": {
+        "confidence_score": 0.8825,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.407008409500122,
+        "throughput": 0.11894837631778457,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 576451,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_26.png",
+      "filename": "factura_26.png",
+      "success": true,
+      "processing_time": 8.263965606689453,
+      "extracted_fields": {
+        "razon_social_vendedor": "dvanced Systems SRL a",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Javier Morales",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "8.400,00",
+        "importe_total": "8.400,00",
+        "numero_factura": "84344412",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "1.600,00",
+            "subtotal": "8.400,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Advanced Systems SRL a PAGTURA Razón Social: Advanced Systems SRL         Punto de Venta: 0004 Comp. Nro: 84344412 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 29457569169 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:San Martín 600 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Javier Morales Condición frente al IVA: Consumidor Final Domicitio: San Telmo 250 Condición de venta: Contado                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. Subtotal 1 Soporte técnico 5 unidad 2.000,00 16% 1.600,00 8.400,00   Subtotal: $8.400,00 Importe Otros Tributos: $0,00 Importe Total: $8.400,00           Pág. 1/1 5165247793596 ARCA Fecha de Vto. de CAE: 01/05/2025   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07307692307692308,
+      "metrics": {
+        "confidence_score": 0.9199999999999999,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.262892723083496,
+        "throughput": 0.12102299200936813,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 576497,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_25.png",
+      "filename": "factura_25.png",
+      "success": true,
+      "processing_time": 9.27383828163147,
+      "extracted_fields": {
+        "razon_social_vendedor": "B Innovative Technologies SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Ana Sanchez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.040,00",
+        "importe_total": "23.040,00",
+        "numero_factura": "24735720",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "2.400,00",
+            "subtotal": "9.600,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Análisis datos",
+            "cantidad": "4",
+            "unidad_medida": "unidad",
+            "precio_unitario": "4.000,00",
+            "importe_bonificacion": "2.560,00",
+            "subtotal": "13.440,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL : : B Innovative Technologies SA coo.00s PAGTURA     Punto de Venta: 0004 Comp.Nro: 24735720 Razón Social: Innovative Technologies SA Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 23121151450 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Figueroa Alcorta 750 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Ana Sanchez Condición frente al (VA: Consumidor Final Domicilio: Maipú 200 Condición de venta: Contado                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Instalación de servidores 1 unidad 12.000,00 20% 2.400,00 9.600,00 2 Análisis de datos 4 unidad 4.000,00 16% 2.560,00 13.440,00   Subtotal: $23.040,00 Importe Otros Tributos: $0,00 Importe Total: $23.040,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07307692307692308,
+      "metrics": {
+        "confidence_score": 0.94,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 9.272830963134766,
+        "throughput": 0.10784193133419752,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 582287,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_27.png",
+      "filename": "factura_27.png",
+      "success": true,
+      "processing_time": 8.539376735687256,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Marcela Pérez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.480,00",
+        "importe_total": "23.480,00",
+        "numero_factura": "57375933",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Desarrollo software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "8.000,00",
+            "importe_bonificacion": "1.120,00",
+            "subtotal": "14.880,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Digital Experts SRL cotas] FACTURA Razón Social: Digital Experts SRL         Punto de Venta: 0004 Comp.Nro: 57375933 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 27747851255 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Av. 9 de Julio 1200 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Marcela Pérez Condición frente al IVA: Consumidor Final Domicitio: San Juan 500 Condición de venta: Contado                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Soporte técnico 5, unidad 2.000,00 14% 1.400,00 8.600,00 2 Desarrollo de software 2 unidad 8.000,00 7% 1.120,00 14.880,00   Subtotal: $23.480,00 Importe Otros Tributos: $0,00 Importe Total: $23.480,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07916666666666668,
+      "metrics": {
+        "confidence_score": 0.8324999999999999,
+        "field_accuracy": 0.6428571428571429,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.539376735687256,
+        "throughput": 0.11710456523376693,
+        "total_fields": 14,
+        "correct_fields": 9,
+        "missing_fields": 2,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 581164,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_28.png",
+      "filename": "factura_28.png",
+      "success": true,
+      "processing_time": 7.160264730453491,
+      "extracted_fields": {
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Patricia Lopez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Consumidor Final",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "19.440,00",
+        "importe_total": "19.440,00",
+        "numero_factura": "22606435",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitación",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "200,00",
+            "subtotal": "4.800,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Mantenimiento mensual",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "1.500,00",
+            "importe_bonificacion": "180,00",
+            "subtotal": "4.320,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "1.680,00",
+            "subtotal": "10.220,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL TechnoConsult SRL a FACTURA: Razón Social: TechnoConsult SRL         Punto de Venta: 0004 Comp.Nro: 22606435 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 23412433431 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Pueyrredón 1400 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Patricia Lopez Condición frente al IVA: Consumidor Final Domicilio: Corrientes 850 Condición de venta: Contado                               [ Producto / servicio | cantidad — Ju. medida] Precio unit. [Bon] — Bont. Subtotal 1 Capacitación 1 unidad 5.000,00 4% 200,00 4.800,00 2 Mantenimiento mensual 3 unidad 1.500,00 4% 180,00 4.320,00 3 Instalación de servidores 1 unidad 12.000,00 14% 1.680,00 10.220,00   Subtotal: $19.440,00 Importe Otros Tributos: $0,00 Importe Total: $19.440,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.07307692307692308,
+      "metrics": {
+        "confidence_score": 0.9224999999999999,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.160264730453491,
+        "throughput": 0.13965964075977197,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 584818,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_29.png",
+      "filename": "factura_29.png",
+      "success": true,
+      "processing_time": 7.278259515762329,
+      "extracted_fields": {
+        "razon_social_vendedor": "Software Development SRL",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Pedro Fernandez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Exento",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "31.290,00",
+        "importe_total": "31.290,00",
+        "numero_factura": "89077758",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "700,00",
+            "subtotal": "9.300,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "1.020,00",
+            "subtotal": "4.980,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL     Software Development SRL] coo.0os Condición frente al IVA: Responsable Inscripto   B | FACTURA Punto de Venta: 0004 Razón Social: Software Development SRL Fecha de Emisión: 27/04/2025 Domicilio Comercial:Calle Corrientes 1500 CUIT: 30-99999999-7 Ingresos Brutos: 23146811948 Fecha de Inicio de Actividades: 01/01/2020   Comp. Nro: 89077758         Condición de venta: Contado Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Pedro Fernandez Condición frente al IVA: Exento Domicilio: Calle Entre Ríos 400                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Soporte técnico 5 unidad 2.000,00 7% 700,00 9.300,00 2 Licencia software 2 unidad 3.000,00 17% 1.020,00 4.980,00 3 Instalación de servidores + unidad 12.000,00 17% 2.040,00 9.960,00 4 Consultoría en IT. 1 unidad 7.500,00 6% 450,00 7.050,00   Subtotal: $31.290,00 Importe Otros Tributos: $0,00 Importe Total: $31.290,00           Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion     5165247793596 Fecha de Vto. de CAE: 01/05/2025",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.99,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.277256727218628,
+        "throughput": 0.13741441830130413,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 594248,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_3.png",
+      "filename": "factura_3.png",
+      "success": true,
+      "processing_time": 7.409408092498779,
+      "extracted_fields": {
+        "razon_social_vendedor": "Data Systems Ltda",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Alba Pérez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "15.780,00",
+        "importe_total": "21.262,80",
+        "iva": "3.313,80",
+        "numero_factura": "95746332",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "840,00",
+            "subtotal": "5.160,00"
+          }
+        ],
+        "deuda_impositiva": "5.482,80"
+      },
+      "extracted_text": "ORIGINAL Data Systems Ltda Le PAGTURA Razón Social: Data Systems Ltda         Punto de Venta: 0004 Comp.Nro: 95746332 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 23697499972 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Calle Tucumán 700 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Alba Pérez Condición frente al IVA: Monotributista Domicitio: Calle Tucumán 700 Condición de venta: Contado                               [ Producto / servicio Ju. medida] Precioun [Bont] imp. Bont. Subtotal 1 Consultoría en IT. 1 unidad 7.500,00 7% 525,00 6.975,00 2 Licencia software 2 unidad 3.000,00 14% 840,00 5.160,00 3 Mantenimiento mensual y unidad 1.500,00 19% 855,00 3.645,00   Percepción IIBB: $ 1.500,00 IVA: $3.313,80 Subtotal: $15.780,00 Importe Otros Tributos: $669,00 Importe Total: $21.262,80           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingrezados an l dea de a operacion",
+      "confidence_score": 0.07857142857142858,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.8571428571428571,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.407396078109741,
+        "throughput": 0.13500020647676578,
+        "total_fields": 14,
+        "correct_fields": 12,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 594129,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_30.png",
+      "filename": "factura_30.png",
+      "success": true,
+      "processing_time": 7.699195146560669,
+      "extracted_fields": {
+        "razon_social_vendedor": "Estrategia Digital SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Digital SA",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Consumidor Final",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "35.770,00",
+        "importe_total": "35.770,00",
+        "numero_factura": "70552783",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "1.080,00",
+            "subtotal": "10.920,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Servicio consultoria",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "1.300,00",
+            "subtotal": "8.700,00"
+          },
+          {
+            "codigo": "3",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "600,00",
+            "subtotal": "9.400,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL   Estrategia Digital SA Razón Social: Estrategia Digital SA Domicilio Comercial:Avenida de Mayo 700 Condicién frente al IVA: Responsable Inscripto Período Facturado Desde:   11/01/2025 Hasta: 31/12/2025 B   coD,006     FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 21949246954 Comp. Nro: 70552783 Fecha de Inicio de Actividades: 01/01/2020   Fecha de Vto. para el pago: 30/04/2025         DNI: 20-12345678-9 Condición frente al IVA: Consumidor Final Condición de venta: Contado Apellido y Nombre / Razón Social: Tomás González Domicitlo: Calle Tucumán 700                                           [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Instalación de servidores 1 unidad 12.000,00 9% 1.080,00 10.920,00 2 Servicio de consultoria 1 unidad 10.000,00 13% 1.300,00 8.700,00 3 Soporte técnico 5 unidad 2.000,00 6% 600,00 9.400,00 4 Consultoría en IT. 1 unidad 7.500,00 10% 750,00 6.750,00 ‘Subtotal: $35.770,00 Importe Otros Tributos: $0,00 Importe Total: $35.770,00 Pág. 1/1 5165247793596   Comprobante Autorizado     Fecha de Vto. de CAE: 01/05/2025 Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 1.0,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.6981165409088135,
+        "throughput": 0.1299019045354623,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 0,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 592049,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_31.png",
+      "filename": "factura_31.png",
+      "success": true,
+      "processing_time": 7.296003818511963,
+      "extracted_fields": {
+        "razon_social_vendedor": "dvanced Systems SRL a",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Isabel Torres",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Exento",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "17.940,00",
+        "importe_total": "17.940,00",
+        "numero_factura": "90351085",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Implementación red",
+            "cantidad": "3",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "750,00",
+            "subtotal": "14.250,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Advanced Systems SRL a PAGTURA         Punto de Venta: 0004 Comp.Nro: 90351085 Razón Social: Advanced Systems SRL Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 22057269470 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:San Martín 1000 Condición frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Isabel Torres Condición frente al IVA: Exento Domicilio: Calle Salta 600 Condición de venta: Contado                               [ Producto / servicio — [u. — preciount [ont] imp. Bont. Sublotal 1 Mantenimiento mensual a, unidad 1.500,00 18% 810,00 3.690,00 2 Implementación de red 3 unidad 5.000,00 5% 750,00 14.250,00   Subtotal: $17.940,00 Importe Otros Tributos: $0,00 Importe Total: $17.940,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.296003818511963,
+        "throughput": 0.13706133177489926,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 581480,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_32.png",
+      "filename": "factura_32.png",
+      "success": true,
+      "processing_time": 8.232105731964111,
+      "extracted_fields": {
+        "razon_social_vendedor": "Cloud Systems SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Carmen Sanchez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Responsable Inscripto",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "29.600,00",
+        "importe_total": "29.600,00",
+        "numero_factura": "29730066",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Capacitacion",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "5.000,00",
+            "importe_bonificacion": "100,00",
+            "subtotal": "4.900,00"
+          },
+          {
+            "codigo": "2",
+            "descripcion": "Instalación servidores",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "12.000,00",
+            "importe_bonificacion": "600,00",
+            "subtotal": "11.400,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL                     Cloud Systems SA 00,006 Punto de Venta: 0004 Comp. Nro: 29730066 Razón Social: Cloud Systems SA Fecha de Emisión: 27/04/2025 Domicilio Comercial: Avenida de Mayo 700 CUIT: 30-99999999-7 Ingresos Brutos: 29226493873 Condición frente al IVA: Responsable Inscripto Fecha de Inicio de Actividades: 01/01/2020 Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Carmen Sanchez Condición frente al IVA: Consumidor Final Domicilio: Rivadavia 300 Condición de venta: Contado                               [ Producto / servicio — [u. — preciount [ont] imp. Bont. Sublotal 1 Capacitacion 1 unidad 5.000,00 2% 100,00 4.900,00 2 Instalación de servidores 1 unidad 12.000,00 5% 600,00 11.400,00 3 Servicio de consultoria + unidad 10.000,00 3% 300,00 9.700,00 4 Mantenimiento mensual E unidad 1.500,00 20% 900,00 3.600,00   Subtotal: $29.600,00 Importe Otros Tributos: $0,00 Importe Total: $29.600,00             5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.99,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 8.222405195236206,
+        "throughput": 0.12161891517817286,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 0,
+        "incorrect_fields": 2
+      },
+      "metadata": {
+        "file_size": 592424,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_33.png",
+      "filename": "factura_33.png",
+      "success": true,
+      "processing_time": 7.3948328495025635,
+      "extracted_fields": {
+        "razon_social_vendedor": "loud Systems SA a",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Laura Gomez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Exento",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "22.300,00",
+        "importe_total": "22.300,00",
+        "numero_factura": "70135170",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Soporte técnico",
+            "cantidad": "5",
+            "unidad_medida": "unidad",
+            "precio_unitario": "2.000,00",
+            "importe_bonificacion": "1.800,00",
+            "subtotal": "8.200,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Cloud Systems SA a PAGTURA Razón Social: Cloud Systems SA         Punto de Venta: 0004 Comp. Nro: 70135170 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 20306408233 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Caballito 400 Condición frente al IVA: Responsable Inscripto 1/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025     Período Facturado Desde:         DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Laura Gomez Condición frente al IVA: Exento Domicilio: Av. Santa Fe 1100 Condición de venta: Contado                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Implementación de red a, unidad 5.000,00 6% 900,00 14.100,00 2 Soporte técnico 5 unidad 2.000,00 18% 1.800,00 8.200,00   Subtotal: $22.300,00 Importe Otros Tributos: $0,00 Importe Total: $22.300,00         Pág. 1/1 5165247793596 ARCA Fecha de Vto. de CAE: 01/05/2025     Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.3948328495025635,
+        "throughput": 0.13522956101262898,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 580299,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_34.png",
+      "filename": "factura_34.png",
+      "success": true,
+      "processing_time": 7.604434251785278,
+      "extracted_fields": {
+        "razon_social_vendedor": "Software Development SR a",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Francisco Diaz",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Exento",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "23.400,00",
+        "importe_total": "23.400,00",
+        "numero_factura": "97157713",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Servicio consultoria",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "1.000,00",
+            "subtotal": "9.000,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL Software Development SR a PAGTURA     Punto de Venta: 0004 Comp.Nro: 97157713 Razón Social: Software Development SRL Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 27101593128 Fecha de Inicio de Actividades: 01/01/2020 Domicilio Comercial:Avenida de Mayo 700 Condicién frente al IVA: Responsable Inscripto             Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Francisco Diaz Condición frente al IVA: Exento Domicilio: Mitre 400 Condición de venta: Contado                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Implementación de red a, unidad 5.000,00 4% 600,00 14.400,00 2 Servicio de consultoria 1 unidad 10.000,00 10% 1.000,00 9.000,00   Subtotal: $23.400,00 Importe Otros Tributos: $0,00 Importe Total: $23.400,00           5165247793596 Fecha de Vto. de CAE: 01/05/2025 Pag. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 7.604434251785278,
+        "throughput": 0.1315022218471061,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 582052,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_35.png",
+      "filename": "factura_35.png",
+      "success": true,
+      "processing_time": 6.016883373260498,
+      "extracted_fields": {
+        "razon_social_vendedor": "Digital Future Ltda",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "Victoria Lopez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Consumidor Final",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "importe_total": "26.645,00",
+        "numero_factura": "58242973",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "1",
+            "descripcion": "Servicio consultoria",
+            "cantidad": "1",
+            "unidad_medida": "unidad",
+            "precio_unitario": "10.000,00",
+            "importe_bonificacion": "1.400,00",
+            "subtotal": "8.600,00"
+          }
+        ],
+        "deuda_impositiva": "0.00"
+      },
+      "extracted_text": "ORIGINAL         Condición frente al IVA: Responsable Inscripto   B | FACTURA Digital Future Ltda 00,006 Punto de Venta: 0004 Comp. Nro: 58242973 Razón Social: Digital Future Ltda Fecha de Emisión: 27/04/2025 Domicilio Comercial:Calle Montevideo 1200 CUIT: 30-99999999-7 Ingresos Brutos: 30561115450 Fecha de Inicio de Actividades: 01/01/2020           Condición de venta: Contado Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: Victoria Lopez Condición frente al IVA: Consumidor Final Domicilio: Laprida 500                               [ Producto / servicio Ju. medida] recioun [Bont] imp. Bont. Subtotal 1 Servicio de consultoria 1 unidad 10.000,00 14% 1.400,00 8.600,00 2 Consultoría en IT. 1 unidad 7.500,00 13% 975,00 6.525,00 3 Instalación de servidores + unidad 12.000,00 4% 480,00 11.520,00   Importe Otros Tributos: $0,00 Importe Total: $26.645,00 Subtotal: $26.645,00           Pág. 1/1   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion     5165247793596 Fecha de Vto. de CAE: 01/05/2025",
+      "confidence_score": 0.06153846153846154,
+      "metrics": {
+        "confidence_score": 0.8825,
+        "field_accuracy": 0.7142857142857143,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 6.016883373260498,
+        "throughput": 0.16619900004113067,
+        "total_fields": 14,
+        "correct_fields": 10,
+        "missing_fields": 1,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 584671,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    },
+    {
+      "file_path": "C:\\Users\\selel\\OneDrive\\Documentos\\Facultad\\ARPYME\\creacion_dataset\\dataset_facturas\\factura_36.png",
+      "filename": "factura_36.png",
+      "success": true,
+      "processing_time": 5.376904726028442,
+      "extracted_fields": {
+        "razon_social_vendedor": "Soluciones Innovadoras SA",
+        "cuit_vendedor": "30-99999999-7",
+        "razon_social_comprador": "María Gonzalez",
+        "cuit_comprador": "20-12345678-9",
+        "condicion_iva_comprador": "Exento",
+        "condicion_venta": "Contado",
+        "fecha_emision": "27/04/2025",
+        "subtotal": "18.770,00",
+        "importe_total": "18.770,00",
+        "numero_factura": "90149761",
+        "punto_venta": "0004",
+        "tipo_factura": "A",
+        "items": [
+          {
+            "codigo": "2",
+            "descripcion": "Licencia software",
+            "cantidad": "2",
+            "unidad_medida": "unidad",
+            "precio_unitario": "3.000,00",
+            "importe_bonificacion": "180,00",
+            "subtotal": "5.820,00"
+          }
+        ],
+        "deuda_impositiva": "0,00"
+      },
+      "extracted_text": "ORIGINAL     Soluciones Innovadoras SA coo.00s Razón Social: Soluciones Innovadoras SA Domicilio Comercial:San Martín 1000 Condición frente al IVA: Responsable Inscripto   B | FACTURA Punto de Venta: 0004 Fecha de Emisión: 27/04/2025 CUIT: 30-99999999-7 Ingresos Brutos: 22190791654 Fecha de Inicio de Actividades: 01/01/2020 Comp. Nro: 90149761           Condición de venta: Contado Período Facturado Desde: 01/01/2025 Hasta: 31/12/2025 Fecha de Vto. para el pago: 30/04/2025 DNI: 20-12345678-9 Apellido y Nombre / Razón Social: María Gonzalez Condición frente al IVA: Exento Domicilio: Avenida Libertador 450                                           [ Producto / servicio — [u. — preciount [ont] imp. Bont. Sublotal 1 Soporte técnico a unidad 2.000,00 12% 1.200,00 8.800,00 2 Licencia software 2 unidad 3.000,00 3% 180,00 5.820,00 3 Capacitación + unidad 5.000,00 17% 850,00 4.150,00 Subtotal: $18.770,00 Importe Otros Tributos: $0,00 Importe Total: $18.770,00 ARCA Pág. 1/1 5165247793596 Fecha de Vto. de CAE: 01/05/2025   Comprobante Autorizado Esta Agencia no se responsabllza poros datos Ingresados an l dea de a operacion",
+      "confidence_score": 0.06785714285714287,
+      "metrics": {
+        "confidence_score": 0.97,
+        "field_accuracy": 0.7857142857142857,
+        "cer": 1.0,
+        "wer": 1.0,
+        "processing_latency": 5.376904726028442,
+        "throughput": 0.18598060612069514,
+        "total_fields": 14,
+        "correct_fields": 11,
+        "missing_fields": 0,
+        "incorrect_fields": 1
+      },
+      "metadata": {
+        "file_size": 585310,
+        "content_type": "image/jpeg",
+        "text_blocks_count": 1,
+        "tables_count": 0,
+        "figures_count": 0
+      }
+    }
+  ]
+}
