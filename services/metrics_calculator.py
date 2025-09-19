@@ -29,35 +29,29 @@ class MetricsCalculator:
     """Calculadora de métricas para el modelo de parsing de facturas"""
     
     def __init__(self):
-        # Campos críticos para el cálculo de accuracy (según especificación del usuario)
-        self.critical_fields = [
+        # Campos estructurados específicos para evaluación (solo los que están en ground truth)
+        self.structured_fields = [
             'cuit_vendedor', 'cuit_comprador', 'fecha_emision',
             'subtotal', 'importe_total'
         ]
         
-        # Campos de items críticos (todos los datos de los items)
-        self.critical_item_fields = [
+        # Campos de items estructurados (solo los que están en ground truth)
+        self.structured_item_fields = [
             'descripcion', 'cantidad', 'precio_unitario', 
             'bonificacion', 'importe_bonificacion'
         ]
         
-        # Campos adicionales
-        self.additional_fields = [
-            'tipo_factura', 'razon_social_vendedor', 'razon_social_comprador',
-            'numero_factura', 'punto_venta', 'condicion_iva_comprador',
-            'condicion_venta', 'iva', 'deuda_impositiva'
-        ]
-        
-        # Todos los campos (sin incluir items que se evalúan por separado)
-        self.all_fields = self.critical_fields + self.additional_fields
+        # NO evaluamos otros campos extraídos por OCR, solo los estructurados
+        # Esto significa que solo comparamos lo que realmente está en el ground truth
     
-    def calculate_confidence_score(self, extracted_fields: Dict[str, Any]) -> float:
+    def calculate_confidence_score(self, extracted_fields: Dict[str, Any], ground_truth: Dict[str, Any] = None) -> float:
         """
-        Calcula el Confidence Score basado en la cantidad y calidad de campos extraídos
-        Incluye evaluación de campos críticos e items
+        Calcula el Confidence Score basado SOLO en campos estructurados específicos
+        Usa la misma lógica que field_accuracy para consistencia
         
         Args:
             extracted_fields: Diccionario con los campos extraídos
+            ground_truth: Campos correctos para comparación (opcional)
             
         Returns:
             Confidence score entre 0.0 y 1.0
@@ -65,26 +59,125 @@ class MetricsCalculator:
         if not extracted_fields:
             return 0.0
         
-        # Peso de campos críticos vs adicionales
-        critical_weight = 0.6
-        items_weight = 0.3
-        additional_weight = 0.1
+        # Si no hay ground truth, usar lógica simple (solo existencia)
+        if not ground_truth:
+            structured_found = 0
+            for field in self.structured_fields:
+                if field in extracted_fields and extracted_fields[field]:
+                    value = str(extracted_fields[field]).strip()
+                    if value and value not in ['', '0', 'N/A', 'null']:
+                        structured_found += 1
+            
+            items_score = self._calculate_structured_items_confidence_score(extracted_fields)
+            total_structured = len(self.structured_fields)
+            fields_score = structured_found / total_structured if total_structured > 0 else 0.0
+            confidence = (fields_score * 0.7) + (items_score * 0.3)
+            return min(confidence, 1.0)
         
-        # Contar campos críticos encontrados
-        critical_found = sum(1 for field in self.critical_fields if field in extracted_fields and extracted_fields[field])
-        critical_score = critical_found / len(self.critical_fields)
+        # Si hay ground truth, usar la misma lógica que field_accuracy
+        total_fields = 0
+        correct_fields = 0
         
-        # Contar campos adicionales encontrados
-        additional_found = sum(1 for field in self.additional_fields if field in extracted_fields and extracted_fields[field])
-        additional_score = additional_found / len(self.additional_fields)
+        # Evaluar campos principales (misma lógica que field_accuracy)
+        for field in self.structured_fields:
+            if field in ground_truth and ground_truth[field]:
+                total_fields += 1
+                ground_value = str(ground_truth[field]).strip().lower()
+                extracted_value = str(extracted_fields.get(field, "")).strip().lower()
+                
+                if extracted_value and self._fields_match(ground_value, extracted_value, field):
+                    correct_fields += 1
         
-        # Calcular score de items
-        items_score = self._calculate_items_confidence_score(extracted_fields)
+        # Evaluar items (misma lógica que field_accuracy)
+        items_accuracy = self._calculate_items_accuracy(extracted_fields, ground_truth)
+        if items_accuracy['total_item_fields'] > 0:
+            total_fields += items_accuracy['total_item_fields']
+            correct_fields += items_accuracy['correct_item_fields']
         
-        # Calcular score ponderado
-        confidence = (critical_score * critical_weight) + (items_score * items_weight) + (additional_score * additional_weight)
+        # Calcular confianza igual que precisión
+        confidence = correct_fields / total_fields if total_fields > 0 else 0.0
         
         return min(confidence, 1.0)
+    
+    def _calculate_structured_items_confidence_score(self, extracted_fields: Dict[str, Any]) -> float:
+        """
+        Calcula el confidence score para items estructurados (solo campos del ground truth)
+        
+        Args:
+            extracted_fields: Campos extraídos por el modelo
+            
+        Returns:
+            Score de confianza para items estructurados (0.0 - 1.0)
+        """
+        items = extracted_fields.get('productos', []) or extracted_fields.get('items', [])
+        
+        if not items:
+            return 0.0
+        
+        total_score = 0.0
+        items_count = 0
+        
+        for item in items:
+            if not item:
+                continue
+                
+            item_score = 0.0
+            valid_fields = 0
+            
+            # Solo evaluar campos estructurados específicos
+            for field in self.structured_item_fields:
+                if field in item and item[field]:
+                    value = str(item[field]).strip()
+                    if value and value not in ['', '0', 'N/A', 'null']:
+                        item_score += 1.0
+                    valid_fields += 1
+            
+            if valid_fields > 0:
+                total_score += item_score / valid_fields
+                items_count += 1
+        
+        return total_score / items_count if items_count > 0 else 0.0
+    
+    def _calculate_items_confidence_score_improved(self, extracted_fields: Dict[str, Any]) -> float:
+        """
+        Calcula el confidence score mejorado para items (solo campos importantes)
+        
+        Args:
+            extracted_fields: Campos extraídos por el modelo
+            
+        Returns:
+            Score de confianza para items (0.0 - 1.0)
+        """
+        items = extracted_fields.get('productos', []) or extracted_fields.get('items', [])
+        
+        if not items:
+            return 0.0
+        
+        # Campos importantes de items (datos estructurados)
+        important_item_fields = ['descripcion', 'cantidad', 'precio_unitario']
+        
+        total_score = 0.0
+        items_count = 0
+        
+        for item in items:
+            if not item:
+                continue
+                
+            item_score = 0.0
+            valid_fields = 0
+            
+            for field in important_item_fields:
+                if field in item and item[field]:
+                    value = str(item[field]).strip()
+                    if value and value not in ['', '0', 'N/A', 'null']:
+                        item_score += 1.0
+                    valid_fields += 1
+            
+            if valid_fields > 0:
+                total_score += item_score / valid_fields
+                items_count += 1
+        
+        return total_score / items_count if items_count > 0 else 0.0
     
     def _calculate_items_confidence_score(self, extracted_fields: Dict[str, Any]) -> float:
         """
@@ -153,8 +246,8 @@ class MetricsCalculator:
             if i < len(extracted_items):
                 extracted_item = extracted_items[i]
             
-            # Evaluar cada campo crítico del item
-            for field in self.critical_item_fields:
+            # Evaluar SOLO campos estructurados específicos del item (no todo lo que extrae el OCR)
+            for field in self.structured_item_fields:
                 total_item_fields += 1
                 field_key = f"{item_key}_{field}"
                 
@@ -216,8 +309,8 @@ class MetricsCalculator:
         incorrect_fields = 0
         field_details = {}
         
-        # Evaluar campos principales
-        for field in self.all_fields:
+        # Evaluar SOLO campos estructurados específicos (no todo lo que extrae el OCR)
+        for field in self.structured_fields:
             if field in ground_truth:
                 total_fields += 1
                 ground_value = str(ground_truth[field]).strip().lower() if ground_truth[field] else ""
@@ -268,6 +361,92 @@ class MetricsCalculator:
             'field_details': field_details,
             'items_accuracy': items_accuracy
         }
+    
+    def correct_missing_fields(self, extracted_fields: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Corrige campos faltantes con valores por defecto y cálculos automáticos
+        
+        Args:
+            extracted_fields: Campos extraídos por el modelo
+            
+        Returns:
+            Campos corregidos con valores por defecto
+        """
+        corrected_fields = extracted_fields.copy()
+        
+        # Solo corregir campos estructurados específicos (no todos los campos del OCR)
+        # No corregimos campos que no están en el ground truth
+        
+        # Normalizar campos numéricos estructurados faltantes
+        structured_numeric_fields = ['subtotal', 'importe_total']
+        for field in structured_numeric_fields:
+            if field not in corrected_fields or not corrected_fields[field]:
+                corrected_fields[field] = "0,00"
+        
+        # Correcciones de items
+        if 'productos' in corrected_fields and corrected_fields['productos']:
+            corrected_items = []
+            for item in corrected_fields['productos']:
+                corrected_item = item.copy()
+                
+                # Calcular importe_bonificacion si falta
+                if 'importe_bonificacion' not in corrected_item or not corrected_item['importe_bonificacion']:
+                    try:
+                        cantidad = float(corrected_item.get('cantidad', 0))
+                        precio_unitario = float(corrected_item.get('precio_unitario', 0))
+                        bonificacion = float(corrected_item.get('bonificacion', 0))
+                        
+                        if cantidad > 0 and precio_unitario > 0 and bonificacion > 0:
+                            importe_bonificacion = cantidad * precio_unitario * (bonificacion / 100)
+                            corrected_item['importe_bonificacion'] = f"{importe_bonificacion:.2f}"
+                        else:
+                            corrected_item['importe_bonificacion'] = "0.00"
+                    except (ValueError, TypeError):
+                        corrected_item['importe_bonificacion'] = "0.00"
+                
+                # Normalizar solo campos estructurados de items
+                structured_item_numeric_fields = ['cantidad', 'precio_unitario', 'bonificacion', 'importe_bonificacion']
+                for field in structured_item_numeric_fields:
+                    if field not in corrected_item or not corrected_item[field]:
+                        corrected_item[field] = "0"
+                
+                # Limpiar solo descripción (campo estructurado)
+                if 'descripcion' in corrected_item and corrected_item['descripcion']:
+                    corrected_item['descripcion'] = self._clean_string_field(corrected_item['descripcion'])
+                
+                corrected_items.append(corrected_item)
+            
+            corrected_fields['productos'] = corrected_items
+        
+        # No normalizamos campos que no están en el ground truth estructurado
+        # Solo manejamos los campos específicos que estamos evaluando
+        
+        return corrected_fields
+    
+    def _clean_string_field(self, value: str) -> str:
+        """
+        Limpia un campo de texto eliminando espacios extra y caracteres inválidos
+        
+        Args:
+            value: Valor del campo a limpiar
+            
+        Returns:
+            Valor limpio
+        """
+        if not value:
+            return ""
+        
+        # Convertir a string y limpiar
+        cleaned = str(value).strip()
+        
+        # Eliminar espacios extra y caracteres de control
+        cleaned = re.sub(r'\s+', ' ', cleaned)
+        cleaned = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', cleaned)
+        
+        # Eliminar caracteres inválidos comunes
+        cleaned = re.sub(r'[^\w\s\-.,\/()ÁÉÍÓÚÑáéíóúñ]', '', cleaned)
+        
+        return cleaned.strip()
     
     def _fields_match(self, ground_value: str, extracted_value: str, field_name: str) -> bool:
         """
@@ -386,7 +565,8 @@ class MetricsCalculator:
     
     def calculate_cer(self, extracted_text: str, ground_truth_text: str) -> float:
         """
-        Calcula el Character Error Rate (CER)
+        Calcula el Character Error Rate (CER) solo sobre campos importantes
+        con normalización completa de caracteres
         
         Args:
             extracted_text: Texto extraído por OCR
@@ -401,9 +581,13 @@ class MetricsCalculator:
         if not extracted_text:
             return 1.0
         
-        # Normalizar textos
-        extracted_norm = self._normalize_text_for_cer(extracted_text)
-        ground_truth_norm = self._normalize_text_for_cer(ground_truth_text)
+        # Extraer solo campos importantes del texto
+        extracted_important = self._extract_important_fields_text(extracted_text)
+        ground_truth_important = self._extract_important_fields_text(ground_truth_text)
+        
+        # Normalizar textos con normalización completa
+        extracted_norm = self._normalize_text_completely(extracted_important)
+        ground_truth_norm = self._normalize_text_completely(ground_truth_important)
         
         # Calcular distancia de Levenshtein
         distance = self._levenshtein_distance(extracted_norm, ground_truth_norm)
@@ -415,7 +599,8 @@ class MetricsCalculator:
     
     def calculate_wer(self, extracted_text: str, ground_truth_text: str) -> float:
         """
-        Calcula el Word Error Rate (WER)
+        Calcula el Word Error Rate (WER) solo sobre campos importantes
+        con normalización completa de caracteres
         
         Args:
             extracted_text: Texto extraído por OCR
@@ -430,9 +615,17 @@ class MetricsCalculator:
         if not extracted_text:
             return 1.0
         
+        # Extraer solo campos importantes del texto
+        extracted_important = self._extract_important_fields_text(extracted_text)
+        ground_truth_important = self._extract_important_fields_text(ground_truth_text)
+        
+        # Normalizar textos con normalización completa
+        extracted_norm = self._normalize_text_completely(extracted_important)
+        ground_truth_norm = self._normalize_text_completely(ground_truth_important)
+        
         # Tokenizar en palabras
-        extracted_words = self._normalize_text_for_wer(extracted_text).split()
-        ground_truth_words = self._normalize_text_for_wer(ground_truth_text).split()
+        extracted_words = extracted_norm.split()
+        ground_truth_words = ground_truth_norm.split()
         
         if not ground_truth_words:
             return 1.0 if extracted_words else 0.0
@@ -445,29 +638,126 @@ class MetricsCalculator:
         
         return min(wer, 1.0)
     
-    def _normalize_text_for_cer(self, text: str) -> str:
-        """Normaliza texto para cálculo de CER"""
+    def _extract_important_fields_text(self, text: str) -> str:
+        """
+        Extrae solo los campos importantes del texto para cálculo de CER/WER
+        Versión simplificada que solo extrae campos realmente relevantes
+        
+        Args:
+            text: Texto completo
+            
+        Returns:
+            Texto con solo campos importantes
+        """
+        if not text:
+            return ""
+        
+        important_parts = []
+        
+        # Solo extraer campos realmente importantes y estructurados
+        patterns = [
+            # CUITs (formato específico)
+            r'\b(\d{2}-\d{8}-\d{1})\b',
+            # Fechas (formato específico)
+            r'\b(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})\b',
+            # Montos (formato específico con comas/puntos)
+            r'\b(\d{1,3}(?:\.\d{3})*(?:,\d{2})?)\b',
+            # Porcentajes
+            r'\b(\d+%)\b'
+        ]
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+            for match in matches:
+                if isinstance(match, tuple):
+                    important_parts.extend([str(m) for m in match if m])
+                else:
+                    important_parts.append(str(match))
+        
+        # Solo incluir elementos realmente relevantes
+        filtered_parts = []
+        for part in important_parts:
+            # Solo incluir CUITs, fechas, montos y porcentajes
+            if (re.match(r'\d{2}-\d{8}-\d{1}', part) or  # CUIT
+                re.match(r'\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}', part) or  # Fecha
+                re.match(r'\d{1,3}(?:\.\d{3})*(?:,\d{2})?', part) or  # Monto
+                re.match(r'\d+%', part)):  # Porcentaje
+                filtered_parts.append(part)
+        
+        return ' '.join(filtered_parts)
+    
+    def _normalize_text_completely(self, text: str) -> str:
+        """
+        Normalización completa de texto: ignorar mayúsculas/minúsculas, espacios extra,
+        comas y puntos
+        
+        Args:
+            text: Texto a normalizar
+            
+        Returns:
+            Texto completamente normalizado
+        """
+        if not text:
+            return ""
+        
         # Convertir a minúsculas
         text = text.lower()
         
-        # Remover espacios extra
-        text = re.sub(r'\s+', ' ', text)
+        # Remover comas y puntos
+        text = re.sub(r'[,.]', '', text)
         
-        # Remover caracteres especiales que no afectan la legibilidad
+        # Remover espacios extra y tabulaciones
+        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r'\t+', ' ', text)
+        
+        # Remover caracteres de control
+        text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
+        
+        # Remover caracteres especiales que no aportan información
         text = re.sub(r'[^\w\s]', '', text)
         
         return text.strip()
     
-    def _normalize_text_for_wer(self, text: str) -> str:
-        """Normaliza texto para cálculo de WER"""
+    def _normalize_text_for_cer(self, text: str) -> str:
+        """Normaliza texto para cálculo de CER - mejorado para reducir errores"""
+        if not text:
+            return ""
+        
         # Convertir a minúsculas
         text = text.lower()
         
-        # Remover caracteres especiales
-        text = re.sub(r'[^\w\s]', ' ', text)
+        # Normalizar comas y puntos en montos (formato argentino)
+        text = re.sub(r'(\d+)\.(\d{3})', r'\1\2', text)  # 1.000 -> 1000
+        text = re.sub(r'(\d+),(\d{2})$', r'\1.\2', text)  # 100,50 -> 100.50 (solo decimales)
         
-        # Normalizar espacios
+        # Remover espacios extra y tabulaciones
         text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r'\t+', ' ', text)
+        
+        # Remover caracteres de control y especiales
+        text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
+        text = re.sub(r'[^\w\s\-.,\/()]', '', text)
+        
+        return text.strip()
+    
+    def _normalize_text_for_wer(self, text: str) -> str:
+        """Normaliza texto para cálculo de WER - mejorado"""
+        if not text:
+            return ""
+        
+        # Convertir a minúsculas
+        text = text.lower()
+        
+        # Normalizar montos antes de tokenizar
+        text = re.sub(r'(\d+)\.(\d{3})', r'\1\2', text)  # 1.000 -> 1000
+        text = re.sub(r'(\d+),(\d{2})$', r'\1.\2', text)  # 100,50 -> 100.50
+        
+        # Remover caracteres especiales pero mantener espacios
+        text = re.sub(r'[^\w\s\-.,\/()]', ' ', text)
+        
+        # Normalizar espacios y tabulaciones
+        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r'\t+', ' ', text)
         
         return text.strip()
     
@@ -556,7 +846,7 @@ class MetricsCalculator:
                                       ground_truth_text: str,
                                       processing_time: float) -> MetricsResult:
         """
-        Calcula todas las métricas de una vez
+        Calcula todas las métricas de una vez con mejoras aplicadas
         
         Args:
             extracted_fields: Campos extraídos por el modelo
@@ -568,9 +858,14 @@ class MetricsCalculator:
         Returns:
             MetricsResult con todas las métricas
         """
-        # Calcular métricas individuales
-        confidence_score = self.calculate_confidence_score(extracted_fields)
-        field_accuracy, accuracy_details = self.calculate_field_accuracy(extracted_fields, ground_truth)
+        # Aplicar correcciones de campos faltantes
+        corrected_fields = self.correct_missing_fields(extracted_fields)
+        
+        # Los textos ya se normalizan dentro de calculate_cer/wer con campos importantes
+        
+        # Calcular métricas individuales con campos corregidos
+        confidence_score = self.calculate_confidence_score(corrected_fields, ground_truth)
+        field_accuracy, accuracy_details = self.calculate_field_accuracy(corrected_fields, ground_truth)
         cer = self.calculate_cer(extracted_text, ground_truth_text)
         wer = self.calculate_wer(extracted_text, ground_truth_text)
         

@@ -1,0 +1,38 @@
+
+=== REPORTE CONSOLIDADO DE BENCHMARK DEL DATASET ===
+Fecha: 2025-09-19 20:57:23
+Dataset: C:\Users\selel\OneDrive\Documentos\Facultad\ARPYME\creacion_dataset\dataset_facturas
+Total de archivos en dataset: 60
+
+RENDIMIENTO POR TAMAÑO DE LOTE:
+--------------------------------------------------------------------------------
+Lote     Docs/seg   Tiempo (s)   Éxito (%)    Confianza   
+--------------------------------------------------------------------------------
+10       0.42       23.89        100.0        0.680       
+
+ANÁLISIS DE TENDENCIAS:
+----------------------------------------
+Throughput promedio: 0.42 documentos/segundo
+Throughput máximo: 0.42 documentos/segundo
+Throughput mínimo: 0.42 documentos/segundo
+Tasa de éxito promedio: 100.0%
+Tasa de éxito máxima: 100.0%
+Tasa de éxito mínima: 100.0%
+
+RECOMENDACIONES:
+----------------------------------------
+• Mejor throughput con lote de 10 documentos
+• Mejor tasa de éxito con lote de 10 documentos
+
+MÉTRICAS DE CALIDAD PROMEDIO:
+----------------------------------------
+• Precisión de campos: 0.600
+• CER (Character Error Rate): 0.720
+• WER (Word Error Rate): 0.924
+
+INFORMACIÓN DEL DATASET:
+----------------------------------------
+• Directorio: C:\Users\selel\OneDrive\Documentos\Facultad\ARPYME\creacion_dataset\dataset_facturas
+• Total de facturas: 60
+• Formato: Imágenes PNG + JSON de ground truth
+• Campos evaluados: 16

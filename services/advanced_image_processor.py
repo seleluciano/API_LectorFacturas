@@ -324,6 +324,12 @@ class AdvancedImageProcessor:
             # Parsear campos específicos de la factura (soporta múltiples facturas)
             invoice_data = self.invoice_parser.parse_multiple_invoices(full_text)
             
+            # Asegurar que el raw_text se preserve en cada factura
+            if invoice_data.get('success') and invoice_data.get('invoices'):
+                for invoice in invoice_data['invoices']:
+                    if 'raw_text' not in invoice or not invoice['raw_text']:
+                        invoice['raw_text'] = full_text
+            
             processing_time = time.time() - start_time
             content_type = "application/pdf" if image_path.lower().endswith('.pdf') else "image/jpeg"
             

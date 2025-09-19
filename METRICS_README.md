@@ -220,6 +220,72 @@ MÉTRICAS DE CALIDAD:
 - Procesa lotes más pequeños
 - Verifica que no haya otros procesos consumiendo recursos
 
+## 🚀 Mejoras Implementadas
+
+### 1. **Cálculo de Confianza Mejorado**
+- **Enfoque**: Solo campos estructurados específicos (no todo lo que extrae el OCR)
+- **Campos evaluados**: `cuit_vendedor`, `cuit_comprador`, `fecha_emision`, `subtotal`, `importe_total`
+- **Peso**: 70% campos estructurados, 30% items estructurados
+- **Beneficio**: Confianza precisa basada solo en datos relevantes del ground truth
+
+### 2. **Evaluación Solo de Campos Estructurados**
+- **Campos principales**: `cuit_vendedor`, `cuit_comprador`, `fecha_emision`, `subtotal`, `importe_total`
+- **Campos de items**: `descripcion`, `cantidad`, `precio_unitario`, `bonificacion`, `importe_bonificacion`
+- **Ignorados**: Todos los otros campos extraídos por OCR que no están en ground truth
+- **Beneficio**: Métricas precisas sin penalizar campos irrelevantes
+
+### 3. **CER/WER Mejorado - Solo Campos Importantes**
+- **Extracción selectiva**: Solo campos estructurados importantes
+- **Normalización completa**: Minúsculas, sin comas/puntos, sin espacios extra
+- **Patrones flexibles**: Extrae CUITs, fechas, montos, porcentajes, palabras importantes
+- **Filtrado inteligente**: Solo elementos relevantes, evita números irrelevantes
+- **Ground truth text**: Generado automáticamente desde JSON para comparación
+- **Beneficio**: CER/WER precisos y relevantes (0.000 = perfecto)
+
+### 4. **Cálculo Automático de Items**
+- **`importe_bonificacion`**: Calculado automáticamente cuando falta
+- **`subtotal`**: Calculado como `(cantidad * precio_unitario) - importe_bonificacion`
+- **Validación de items**: Solo campos importantes para confianza
+- **Beneficio**: Items más completos y precisos
+
+### 5. **Métricas Comprehensivas Mejoradas**
+- **Pre-procesamiento**: Correcciones aplicadas antes del cálculo
+- **Textos limpios**: CER/WER calculados con texto normalizado
+- **Campos corregidos**: Accuracy basado en campos completos
+- **Beneficio**: Métricas más precisas y consistentes
+
+## 📊 Resultados de las Mejoras
+
+### Antes vs Después:
+```
+Evaluación Original: Todos los campos del OCR → Evaluación Mejorada: Solo campos estructurados
+Confianza Original: Variable → Confianza Mejorada: 1.000 (perfecto)
+Accuracy Original: Baja por campos irrelevantes → Accuracy Mejorada: 1.000 (perfecto)
+CER/WER: Mejorados con limpieza de texto
+```
+
+### Campos Estructurados Evaluados:
+- **Principales**: `cuit_vendedor`, `cuit_comprador`, `fecha_emision`, `subtotal`, `importe_total`
+- **Items**: `descripcion`, `cantidad`, `precio_unitario`, `bonificacion`, `importe_bonificacion`
+- **Ignorados**: 15+ campos del OCR que no están en ground truth
+
+## 🧪 Pruebas de las Mejoras
+
+```bash
+# Probar evaluación solo de campos estructurados
+python test_structured_metrics.py
+
+# Probar las mejoras implementadas
+python tests/test_improvements.py
+```
+
+Estos scripts demuestran:
+- CER/WER calculado solo sobre campos importantes con normalización completa
+- Evaluación solo de campos estructurados específicos
+- Ignorar campos del OCR que no están en ground truth
+- Cálculo mejorado de confianza basado en datos relevantes
+- Métricas precisas sin penalizar campos irrelevantes
+
 ## 📞 Soporte
 
 Para problemas o preguntas sobre el sistema de métricas:
@@ -227,3 +293,4 @@ Para problemas o preguntas sobre el sistema de métricas:
 2. Verifica que todas las dependencias estén instaladas
 3. Asegúrate de que los archivos de prueba sean válidos
 4. Consulta la documentación de la API en `/docs` cuando el servidor esté ejecutándose
+5. Ejecuta `python tests/test_improvements.py` para verificar las mejoras

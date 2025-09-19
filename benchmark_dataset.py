@@ -81,8 +81,8 @@ class DatasetBenchmark:
                         'deuda_impositiva': data.get('percepcion_iibb', ''),
                         'numero_factura': data.get('numero_factura', ''),
                         'punto_venta': data.get('punto_venta', ''),
-                        'raw_text': '',  # Se llenará durante el procesamiento
-                        'productos': data.get('productos', [])
+                        'raw_text': self._generate_ground_truth_text(data),  # Generar texto del JSON
+                        'items': data.get('items', [])
                     }
                     
                     logger.debug(f"Ground truth cargado para: {os.path.basename(image_path)}")
@@ -94,6 +94,49 @@ class DatasetBenchmark:
         
         logger.info(f"Ground truth cargado: {len(ground_truth)} archivos")
         return ground_truth
+    
+    def _generate_ground_truth_text(self, data: Dict[str, Any]) -> str:
+        """
+        Genera texto del ground truth a partir de los datos JSON
+        
+        Args:
+            data: Datos del JSON
+            
+        Returns:
+            Texto generado para comparación CER/WER
+        """
+        text_parts = []
+        
+        # Agregar campos principales (usar nombres correctos del JSON)
+        if data.get('cuit_vendedor'):
+            text_parts.append(f"CUIT: {data['cuit_vendedor']}")
+        if data.get('cuit_comprador'):
+            text_parts.append(f"DNI: {data['cuit_comprador']}")
+        if data.get('fecha_emision'):
+            text_parts.append(f"Fecha de Emisión: {data['fecha_emision']}")
+        if data.get('subtotal'):
+            text_parts.append(f"Subtotal: {data['subtotal']}")
+        if data.get('importe_total'):
+            text_parts.append(f"Importe Total: {data['importe_total']}")
+        
+        # Agregar items (usar nombre correcto del JSON)
+        items = data.get('items', [])
+        for i, item in enumerate(items, 1):
+            if isinstance(item, dict):
+                descripcion = item.get('descripcion', '')
+                cantidad = item.get('cantidad', '')
+                precio_unitario = item.get('precio_unitario', '')
+                bonificacion = item.get('bonificacion', '')
+                importe_bonificacion = item.get('importe_bonificacion', '')
+                
+                if descripcion and cantidad and precio_unitario:
+                    text_parts.append(f"{i} {descripcion} {cantidad} unidad {precio_unitario}")
+                    if bonificacion:
+                        text_parts.append(f"{bonificacion}")
+                    if importe_bonificacion:
+                        text_parts.append(f"{importe_bonificacion}")
+        
+        return ' '.join(text_parts)
     
     def find_dataset_images(self, dataset_directory: str) -> List[str]:
         """
@@ -187,7 +230,7 @@ class DatasetBenchmark:
             logger.info(f"   Tasa de éxito: {batch_result['performance_metrics']['success_rate']:.2%}")
         
         # Generar reporte consolidado
-        consolidated_report = self._generate_consolidated_report(benchmark_results, dataset_directory)
+        consolidated_report = self._generate_consolidated_report(benchmark_results, dataset_directory, ground_truth_data)
         
         # Guardar reporte consolidado
         consolidated_file = os.path.join(output_dir, "dataset_consolidated_report.txt")
@@ -203,7 +246,7 @@ class DatasetBenchmark:
         
         return benchmark_results
     
-    def _generate_consolidated_report(self, benchmark_results: Dict[str, Any], dataset_directory: str) -> str:
+    def _generate_consolidated_report(self, benchmark_results: Dict[str, Any], dataset_directory: str, ground_truth_data: Dict[str, Any]) -> str:
         """Genera un reporte consolidado de todos los benchmarks del dataset"""
         report = f"""
 === REPORTE CONSOLIDADO DE BENCHMARK DEL DATASET ===

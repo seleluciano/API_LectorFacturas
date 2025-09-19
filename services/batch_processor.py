@@ -174,7 +174,7 @@ class BatchProcessor:
                 'processing_time': processing_time,
                 'extracted_fields': extracted_fields,
                 'extracted_text': extracted_text,
-                'confidence_score': invoice.get("parsing_confidence", 0.0),
+                'confidence_score': metrics.confidence_score if metrics else invoice.get("parsing_confidence", 0.0),
                 'metrics': metrics.__dict__ if metrics else None,
                 'metadata': {
                     'file_size': result.file_size,
@@ -250,7 +250,8 @@ class BatchProcessor:
                 'avg_wer': sum(wer_values) / len(wer_values),
                 'total_correct_fields': sum(m['correct_fields'] for m in metrics_results),
                 'total_missing_fields': sum(m['missing_fields'] for m in metrics_results),
-                'total_incorrect_fields': sum(m['incorrect_fields'] for m in metrics_results)
+                'total_incorrect_fields': sum(m['incorrect_fields'] for m in metrics_results),
+                'total_fields': sum(m['total_fields'] for m in metrics_results)
             }
         
         return {
@@ -367,6 +368,7 @@ MÉTRICAS DE CALIDAD:
 - Precisión de campos promedio: {acc['avg_field_accuracy']:.3f}
 - CER (Character Error Rate) promedio: {acc['avg_cer']:.3f}
 - WER (Word Error Rate) promedio: {acc['avg_wer']:.3f}
+- Total de campos evaluados: {acc['total_fields']}
 - Campos correctos totales: {acc['total_correct_fields']}
 - Campos faltantes totales: {acc['total_missing_fields']}
 - Campos incorrectos totales: {acc['total_incorrect_fields']}
