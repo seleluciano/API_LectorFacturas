@@ -98,6 +98,29 @@ class StructuredInvoiceResponse(BaseModel):
     metadata: Dict[str, Any] = Field(default={}, description="Metadatos adicionales")
     error_message: Optional[str] = Field(None, description="Mensaje de error si ocurrió alguno")
 
+class MetricsData(BaseModel):
+    """Modelo para métricas de evaluación del modelo"""
+    confidence_score: float = Field(..., description="Confidence Score (0-1)")
+    field_accuracy: float = Field(..., description="Precisión de campos (0-1)")
+    cer: float = Field(..., description="Character Error Rate (0-1)")
+    wer: float = Field(..., description="Word Error Rate (0-1)")
+    processing_latency: float = Field(..., description="Tiempo de procesamiento en segundos")
+    throughput: float = Field(..., description="Documentos por segundo")
+    total_fields: int = Field(..., description="Total de campos evaluados")
+    correct_fields: int = Field(..., description="Campos correctos")
+    missing_fields: int = Field(..., description="Campos faltantes")
+    incorrect_fields: int = Field(..., description="Campos incorrectos")
+
+class BatchMetrics(BaseModel):
+    """Modelo para métricas de lote"""
+    throughput: float = Field(..., description="Documentos por segundo")
+    avg_processing_time: float = Field(..., description="Tiempo promedio de procesamiento")
+    avg_confidence_score: float = Field(..., description="Confidence Score promedio")
+    success_rate: float = Field(..., description="Tasa de éxito (0-1)")
+    total_documents_processed: int = Field(..., description="Total de documentos procesados")
+    total_processing_time: float = Field(..., description="Tiempo total de procesamiento")
+    accuracy_metrics: Optional[Dict[str, float]] = Field(None, description="Métricas de precisión")
+
 class ErrorResponse(BaseModel):
     """Modelo para respuestas de error"""
     error: str = Field(..., description="Tipo de error")

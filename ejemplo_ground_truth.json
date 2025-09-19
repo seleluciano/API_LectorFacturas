@@ -1,0 +1,36 @@
+{
+  "factura_ejemplo_1.pdf": {
+    "tipo_factura": "A",
+    "razon_social_vendedor": "Empresa Ejemplo SRL",
+    "cuit_vendedor": "20-12345678-9",
+    "razon_social_comprador": "Cliente Ejemplo",
+    "cuit_comprador": "20-87654321-0",
+    "condicion_iva_comprador": "Responsable Inscripto",
+    "condicion_venta": "Contado",
+    "fecha_emision": "01/01/2024",
+    "subtotal": "1000,00",
+    "importe_total": "1210,00",
+    "iva": "210,00",
+    "deuda_impositiva": "210,00",
+    "numero_factura": "0001-00000001",
+    "punto_venta": "0001",
+    "raw_text": "Texto completo de la factura 1..."
+  },
+  "factura_ejemplo_2.pdf": {
+    "tipo_factura": "B",
+    "razon_social_vendedor": "Otra Empresa SA",
+    "cuit_vendedor": "30-98765432-1",
+    "razon_social_comprador": "Otro Cliente",
+    "cuit_comprador": "20-11111111-1",
+    "condicion_iva_comprador": "Consumidor Final",
+    "condicion_venta": "Contado",
+    "fecha_emision": "15/01/2024",
+    "subtotal": "500,00",
+    "importe_total": "605,00",
+    "iva": "105,00",
+    "deuda_impositiva": "105,00",
+    "numero_factura": "0002-00000001",
+    "punto_venta": "0002",
+    "raw_text": "Texto completo de la factura 2..."
+  }
+}

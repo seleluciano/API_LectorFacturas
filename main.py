@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
@@ -7,8 +7,10 @@ from typing import Dict, Any, List
 import logging
 
 from config import settings
-from models import ProcessingResult, ErrorResponse, StructuredInvoiceResponse, InvoiceFields
+from models import ProcessingResult, ErrorResponse, StructuredInvoiceResponse, InvoiceFields, MetricsData, BatchMetrics
 from services.advanced_image_processor import AdvancedImageProcessor
+from services.metrics_calculator import MetricsCalculator
+from services.batch_processor import BatchProcessor
 from utils.file_utils import validate_file_type, validate_file_size, save_upload_file, cleanup_file
 
 # Configurar logging
@@ -38,6 +40,10 @@ if not os.path.exists(settings.UPLOAD_DIR):
 # Inicializar procesador avanzado de imágenes con scikit-image
 image_processor = AdvancedImageProcessor()
 
+# Inicializar calculador de métricas y procesador de lotes
+metrics_calculator = MetricsCalculator()
+batch_processor = BatchProcessor()
+
 @app.get("/")
 async def root():
     """Endpoint de bienvenida"""
@@ -49,7 +55,9 @@ async def root():
             "process_image": "/process-image (INTELIGENTE - detecta facturas automáticamente)",
             "process_multiple_images": "/process-multiple-images (INTELIGENTE - múltiples archivos)",
             "process_invoice": "/process-invoice (solo facturas)",
-            "process_invoices_structured": "/process-invoices-structured (solo facturas estructuradas)"
+            "process_invoices_structured": "/process-invoices-structured (solo facturas estructuradas)",
+            "evaluate_metrics": "/evaluate-metrics (evaluar métricas del modelo)",
+            "batch_benchmark": "/batch-benchmark (benchmark de lotes)"
         }
     }
 
@@ -607,6 +615,249 @@ async def process_invoices_structured(files: List[UploadFile] = File(...)):
     
     finally:
         # Limpiar archivos temporales restantes
+        for file_path in file_paths:
+            if os.path.exists(file_path):
+                cleanup_file(file_path)
+
+@app.post("/evaluate-metrics")
+async def evaluate_metrics(
+    file: UploadFile = File(...),
+    ground_truth: str = Form(None)
+):
+    """
+    Endpoint para evaluar métricas del modelo con un archivo y datos de verdad de campo
+    
+    Args:
+        file: Archivo de imagen/PDF de factura a procesar
+        ground_truth: JSON string con datos de verdad de campo (opcional)
+        
+    Returns:
+        JSON con métricas de evaluación del modelo
+    """
+    file_path = None
+    try:
+        # Validar tipo de archivo
+        if not validate_file_type(file, settings.ALLOWED_EXTENSIONS):
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Tipo de archivo no permitido. Extensiones permitidas: {', '.join(settings.ALLOWED_EXTENSIONS)}"
+            )
+        
+        # Validar tamaño de archivo
+        if not validate_file_size(file, settings.MAX_FILE_SIZE):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Archivo demasiado grande. Tamaño máximo: {settings.MAX_FILE_SIZE / (1024*1024):.1f}MB"
+            )
+        
+        # Guardar archivo temporalmente
+        file_path = save_upload_file(file, settings.UPLOAD_DIR)
+        if not file_path:
+            raise HTTPException(
+                status_code=500,
+                detail="Error guardando archivo temporal"
+            )
+        
+        logger.info(f"Evaluando métricas para archivo: {file_path}")
+        
+        # Procesar imagen
+        result = image_processor.process_image(file_path)
+        
+        if result.status != "success":
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error procesando imagen: {result.error_message}"
+            )
+        
+        # Extraer datos de factura
+        invoice_data = result.metadata.get("invoice_parsing", {})
+        
+        if not invoice_data.get("success", False):
+            raise HTTPException(
+                status_code=400,
+                detail="No se pudo extraer datos de factura del archivo"
+            )
+        
+        # Obtener la primera factura
+        invoices = invoice_data.get("invoices", [])
+        if not invoices:
+            raise HTTPException(
+                status_code=400,
+                detail="No se encontraron facturas en el archivo"
+            )
+        
+        invoice = invoices[0]
+        extracted_fields = invoice.get("extracted_fields", {})
+        extracted_text = invoice.get("raw_text", "")
+        
+        # Calcular métricas básicas
+        confidence_score = metrics_calculator.calculate_confidence_score(extracted_fields)
+        
+        # Calcular métricas completas si hay ground truth
+        metrics_data = None
+        logger.info(f"Ground truth recibido: {ground_truth}")
+        logger.info(f"Ground truth type: {type(ground_truth)}")
+        logger.info(f"Ground truth bool: {bool(ground_truth)}")
+        
+        if ground_truth and ground_truth.strip():
+            logger.info("Iniciando procesamiento de ground truth...")
+            try:
+                import json
+                logger.info(f"Procesando ground truth: {ground_truth[:100]}...")
+                ground_truth_dict = json.loads(ground_truth)
+                ground_truth_text = ground_truth_dict.get('raw_text', extracted_text)
+                
+                logger.info(f"Ground truth dict keys: {list(ground_truth_dict.keys())}")
+                logger.info(f"Extracted fields keys: {list(extracted_fields.keys())}")
+                
+                metrics_result = metrics_calculator.calculate_comprehensive_metrics(
+                    extracted_fields=extracted_fields,
+                    ground_truth=ground_truth_dict,
+                    extracted_text=extracted_text,
+                    ground_truth_text=ground_truth_text,
+                    processing_time=result.processing_time
+                )
+                
+                logger.info(f"MetricsResult obtenido: {metrics_result}")
+                
+                metrics_data = MetricsData(
+                    confidence_score=metrics_result.confidence_score,
+                    field_accuracy=metrics_result.field_accuracy,
+                    cer=metrics_result.cer,
+                    wer=metrics_result.wer,
+                    processing_latency=metrics_result.processing_latency,
+                    throughput=metrics_result.throughput,
+                    total_fields=metrics_result.total_fields,
+                    correct_fields=metrics_result.correct_fields,
+                    missing_fields=metrics_result.missing_fields,
+                    incorrect_fields=metrics_result.incorrect_fields
+                )
+                logger.info(f"Métricas calculadas exitosamente: {metrics_data}")
+            except Exception as e:
+                logger.error(f"Error procesando ground truth: {e}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+        else:
+            logger.info("No hay ground truth o está vacío")
+        
+        # Crear respuesta
+        response = {
+            "success": True,
+            "filename": result.filename,
+            "file_size": result.file_size,
+            "processing_time": result.processing_time,
+            "confidence_score": confidence_score,
+            "extracted_fields": extracted_fields,
+            "extracted_text": extracted_text,
+            "metrics": metrics_data.model_dump() if metrics_data else None,
+            "metadata": {
+                "text_blocks_count": len(result.text_blocks),
+                "tables_count": len(result.tables),
+                "figures_count": len(result.figures),
+                "has_ground_truth": ground_truth is not None and ground_truth.strip() != ""
+            }
+        }
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error evaluando métricas: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
+    finally:
+        # Limpiar archivo temporal
+        if file_path and os.path.exists(file_path):
+            cleanup_file(file_path)
+
+@app.post("/batch-benchmark")
+async def batch_benchmark(
+    files: List[UploadFile] = File(...),
+    ground_truth: str = None,
+    max_workers: int = 4
+):
+    """
+    Endpoint para hacer benchmark de lotes de facturas
+    
+    Args:
+        files: Lista de archivos de imágenes/PDFs de facturas
+        ground_truth: JSON string con datos de verdad de campo (opcional)
+        max_workers: Número máximo de workers para procesamiento paralelo
+        
+    Returns:
+        JSON con resultados del benchmark del lote
+    """
+    file_paths = []
+    
+    try:
+        # Validar que se envíen archivos
+        if not files:
+            raise HTTPException(status_code=400, detail="No se enviaron archivos")
+        
+        # Validar límite de archivos
+        if len(files) > 100:  # Límite de 100 archivos para benchmark
+            raise HTTPException(status_code=400, detail="Máximo 100 archivos permitidos para benchmark")
+        
+        # Guardar archivos temporalmente
+        for file in files:
+            if validate_file_type(file, settings.ALLOWED_EXTENSIONS) and validate_file_size(file, settings.MAX_FILE_SIZE):
+                file_path = save_upload_file(file, settings.UPLOAD_DIR)
+                if file_path:
+                    file_paths.append(file_path)
+        
+        if not file_paths:
+            raise HTTPException(status_code=400, detail="No se pudieron procesar los archivos")
+        
+        # Cargar ground truth si se proporciona
+        ground_truth_data = None
+        if ground_truth:
+            try:
+                import json
+                ground_truth_dict = json.loads(ground_truth)
+                # Convertir a formato esperado por batch_processor
+                ground_truth_data = {}
+                for file in files:
+                    if file.filename in ground_truth_dict:
+                        ground_truth_data[file.filename] = ground_truth_dict[file.filename]
+            except Exception as e:
+                logger.warning(f"Error procesando ground truth: {e}")
+        
+        logger.info(f"Ejecutando benchmark con {len(file_paths)} archivos")
+        
+        # Ejecutar benchmark
+        batch_result = batch_processor.process_batch(
+            file_paths=file_paths,
+            ground_truth_data=ground_truth_data
+        )
+        
+        # Generar reporte
+        report = batch_processor.generate_performance_report(batch_result)
+        
+        # Crear respuesta
+        response = {
+            "success": True,
+            "batch_info": batch_result['batch_info'],
+            "performance_metrics": batch_result['performance_metrics'],
+            "report": report,
+            "total_files": len(files),
+            "processed_files": len(file_paths)
+        }
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error en benchmark de lote: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
+    finally:
+        # Limpiar archivos temporales
         for file_path in file_paths:
             if os.path.exists(file_path):
                 cleanup_file(file_path)
