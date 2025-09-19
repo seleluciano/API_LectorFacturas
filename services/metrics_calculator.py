@@ -29,25 +29,32 @@ class MetricsCalculator:
     """Calculadora de métricas para el modelo de parsing de facturas"""
     
     def __init__(self):
-        # Campos críticos para el cálculo de accuracy
+        # Campos críticos para el cálculo de accuracy (según especificación del usuario)
         self.critical_fields = [
-            'tipo_factura', 'razon_social_vendedor', 'cuit_vendedor',
-            'razon_social_comprador', 'cuit_comprador', 'fecha_emision',
-            'importe_total', 'subtotal'
+            'cuit_vendedor', 'cuit_comprador', 'fecha_emision',
+            'subtotal', 'importe_total'
+        ]
+        
+        # Campos de items críticos (todos los datos de los items)
+        self.critical_item_fields = [
+            'descripcion', 'cantidad', 'precio_unitario', 
+            'bonificacion', 'importe_bonificacion'
         ]
         
         # Campos adicionales
         self.additional_fields = [
+            'tipo_factura', 'razon_social_vendedor', 'razon_social_comprador',
             'numero_factura', 'punto_venta', 'condicion_iva_comprador',
             'condicion_venta', 'iva', 'deuda_impositiva'
         ]
         
-        # Todos los campos
+        # Todos los campos (sin incluir items que se evalúan por separado)
         self.all_fields = self.critical_fields + self.additional_fields
     
     def calculate_confidence_score(self, extracted_fields: Dict[str, Any]) -> float:
         """
         Calcula el Confidence Score basado en la cantidad y calidad de campos extraídos
+        Incluye evaluación de campos críticos e items
         
         Args:
             extracted_fields: Diccionario con los campos extraídos
@@ -59,8 +66,9 @@ class MetricsCalculator:
             return 0.0
         
         # Peso de campos críticos vs adicionales
-        critical_weight = 0.7
-        additional_weight = 0.3
+        critical_weight = 0.6
+        items_weight = 0.3
+        additional_weight = 0.1
         
         # Contar campos críticos encontrados
         critical_found = sum(1 for field in self.critical_fields if field in extracted_fields and extracted_fields[field])
@@ -70,21 +78,127 @@ class MetricsCalculator:
         additional_found = sum(1 for field in self.additional_fields if field in extracted_fields and extracted_fields[field])
         additional_score = additional_found / len(self.additional_fields)
         
-        # Calcular score ponderado
-        confidence = (critical_score * critical_weight) + (additional_score * additional_weight)
+        # Calcular score de items
+        items_score = self._calculate_items_confidence_score(extracted_fields)
         
-        # Bonus por items extraídos
-        if 'items' in extracted_fields and extracted_fields['items']:
-            items_count = len(extracted_fields['items']) if isinstance(extracted_fields['items'], list) else 1
-            items_bonus = min(0.1, items_count * 0.02)  # Máximo 10% de bonus
-            confidence += items_bonus
+        # Calcular score ponderado
+        confidence = (critical_score * critical_weight) + (items_score * items_weight) + (additional_score * additional_weight)
         
         return min(confidence, 1.0)
+    
+    def _calculate_items_confidence_score(self, extracted_fields: Dict[str, Any]) -> float:
+        """
+        Calcula el confidence score específico para items
+        
+        Args:
+            extracted_fields: Campos extraídos por el modelo
+            
+        Returns:
+            Score de confianza para items (0.0 - 1.0)
+        """
+        items = extracted_fields.get('productos', []) or extracted_fields.get('items', [])
+        
+        if not items:
+            return 0.0
+        
+        total_item_fields = 0
+        found_item_fields = 0
+        
+        for item in items:
+            for field in self.critical_item_fields:
+                total_item_fields += 1
+                if field in item and item[field]:
+                    found_item_fields += 1
+        
+        return found_item_fields / total_item_fields if total_item_fields > 0 else 0.0
+    
+    def _calculate_items_accuracy(self, extracted_fields: Dict[str, Any], 
+                                ground_truth: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Calcula la precisión de los items extraídos
+        
+        Args:
+            extracted_fields: Campos extraídos por el modelo
+            ground_truth: Campos correctos (verdad de campo)
+            
+        Returns:
+            Diccionario con métricas de items
+        """
+        total_item_fields = 0
+        correct_item_fields = 0
+        missing_item_fields = 0
+        incorrect_item_fields = 0
+        item_details = {}
+        
+        # Obtener items del ground truth y extraídos
+        ground_items = ground_truth.get('productos', []) or ground_truth.get('items', [])
+        extracted_items = extracted_fields.get('productos', []) or extracted_fields.get('items', [])
+        
+        if not ground_items:
+            return {
+                'total_item_fields': 0,
+                'correct_item_fields': 0,
+                'missing_item_fields': 0,
+                'incorrect_item_fields': 0,
+                'item_details': {}
+            }
+        
+        # Evaluar cada item del ground truth
+        for i, ground_item in enumerate(ground_items):
+            item_key = f"item_{i+1}"
+            item_details[item_key] = {}
+            
+            # Buscar el item correspondiente en los extraídos
+            extracted_item = None
+            if i < len(extracted_items):
+                extracted_item = extracted_items[i]
+            
+            # Evaluar cada campo crítico del item
+            for field in self.critical_item_fields:
+                total_item_fields += 1
+                field_key = f"{item_key}_{field}"
+                
+                ground_value = str(ground_item.get(field, "")).strip().lower() if ground_item.get(field) else ""
+                extracted_value = str(extracted_item.get(field, "")).strip().lower() if extracted_item and extracted_item.get(field) else ""
+                
+                if not ground_value:  # Campo no requerido
+                    continue
+                
+                if not extracted_value:  # Campo no extraído
+                    missing_item_fields += 1
+                    item_details[item_key][field] = {
+                        'status': 'missing',
+                        'ground_truth': ground_value,
+                        'extracted': extracted_value
+                    }
+                elif self._fields_match(ground_value, extracted_value, field):
+                    correct_item_fields += 1
+                    item_details[item_key][field] = {
+                        'status': 'correct',
+                        'ground_truth': ground_value,
+                        'extracted': extracted_value
+                    }
+                else:
+                    incorrect_item_fields += 1
+                    item_details[item_key][field] = {
+                        'status': 'incorrect',
+                        'ground_truth': ground_value,
+                        'extracted': extracted_value
+                    }
+        
+        return {
+            'total_item_fields': total_item_fields,
+            'correct_item_fields': correct_item_fields,
+            'missing_item_fields': missing_item_fields,
+            'incorrect_item_fields': incorrect_item_fields,
+            'item_details': item_details
+        }
     
     def calculate_field_accuracy(self, extracted_fields: Dict[str, Any], 
                                ground_truth: Dict[str, Any]) -> Tuple[float, Dict[str, Any]]:
         """
         Calcula la precisión de los campos extraídos comparando con la verdad de campo
+        Incluye evaluación de campos principales e items
         
         Args:
             extracted_fields: Campos extraídos por el modelo
@@ -102,6 +216,7 @@ class MetricsCalculator:
         incorrect_fields = 0
         field_details = {}
         
+        # Evaluar campos principales
         for field in self.all_fields:
             if field in ground_truth:
                 total_fields += 1
@@ -133,6 +248,15 @@ class MetricsCalculator:
                         'extracted': extracted_value
                     }
         
+        # Evaluar items (campos críticos)
+        items_accuracy = self._calculate_items_accuracy(extracted_fields, ground_truth)
+        if items_accuracy['total_item_fields'] > 0:
+            total_fields += items_accuracy['total_item_fields']
+            correct_fields += items_accuracy['correct_item_fields']
+            missing_fields += items_accuracy['missing_item_fields']
+            incorrect_fields += items_accuracy['incorrect_item_fields']
+            field_details['items'] = items_accuracy['item_details']
+        
         # Calcular accuracy
         accuracy = correct_fields / total_fields if total_fields > 0 else 0.0
         
@@ -141,7 +265,8 @@ class MetricsCalculator:
             'correct_fields': correct_fields,
             'missing_fields': missing_fields,
             'incorrect_fields': incorrect_fields,
-            'field_details': field_details
+            'field_details': field_details,
+            'items_accuracy': items_accuracy
         }
     
     def _fields_match(self, ground_value: str, extracted_value: str, field_name: str) -> bool:
@@ -164,7 +289,7 @@ class MetricsCalculator:
         extracted_clean = self._normalize_field_value(extracted_value, field_name)
         
         # Para campos numéricos, comparar valores numéricos
-        if field_name in ['importe_total', 'subtotal', 'iva', 'deuda_impositiva']:
+        if field_name in ['importe_total', 'subtotal', 'iva', 'deuda_impositiva', 'precio_unitario', 'importe_bonificacion', 'cantidad', 'bonificacion']:
             try:
                 ground_num = self._parse_numeric_value(ground_clean)
                 extracted_num = self._parse_numeric_value(extracted_clean)
