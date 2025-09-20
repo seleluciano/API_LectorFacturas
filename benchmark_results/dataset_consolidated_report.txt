@@ -1,6 +1,6 @@
 
 === REPORTE CONSOLIDADO DE BENCHMARK DEL DATASET ===
-Fecha: 2025-09-19 20:57:23
+Fecha: 2025-09-19 21:25:59
 Dataset: C:\Users\selel\OneDrive\Documentos\Facultad\ARPYME\creacion_dataset\dataset_facturas
 Total de archivos en dataset: 60
 
@@ -8,13 +8,13 @@ RENDIMIENTO POR TAMAÑO DE LOTE:
 --------------------------------------------------------------------------------
 Lote     Docs/seg   Tiempo (s)   Éxito (%)    Confianza   
 --------------------------------------------------------------------------------
-10       0.42       23.89        100.0        0.680       
+10       0.49       20.52        100.0        0.834       
 
 ANÁLISIS DE TENDENCIAS:
 ----------------------------------------
-Throughput promedio: 0.42 documentos/segundo
-Throughput máximo: 0.42 documentos/segundo
-Throughput mínimo: 0.42 documentos/segundo
+Throughput promedio: 0.49 documentos/segundo
+Throughput máximo: 0.49 documentos/segundo
+Throughput mínimo: 0.49 documentos/segundo
 Tasa de éxito promedio: 100.0%
 Tasa de éxito máxima: 100.0%
 Tasa de éxito mínima: 100.0%
@@ -26,7 +26,7 @@ RECOMENDACIONES:
 
 MÉTRICAS DE CALIDAD PROMEDIO:
 ----------------------------------------
-• Precisión de campos: 0.600
+• Precisión de campos: 0.721
 • CER (Character Error Rate): 0.720
 • WER (Word Error Rate): 0.924
 

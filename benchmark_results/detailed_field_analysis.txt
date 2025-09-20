@@ -1,0 +1,210 @@
+
+=== REPORTE DETALLADO DE ANÁLISIS DE CAMPOS ===
+Fecha: 2025-09-19 21:27:51
+Total de documentos analizados: 10
+
+RESUMEN EJECUTIVO:
+============================================================
+• Total de campos analizados: 9
+• Precisión promedio: 0.889 (88.9%)
+
+CAMPOS CON PEOR RENDIMIENTO (Top 5):
+============================================================
+
+1. DESCRIPCION:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: 'instalación servidores' vs 'implementación de red'
+     • factura_10.png: 'implementación red' vs 'instalación de servidores'
+     • factura_1.png: 'soporte técnico' vs 'consultoría en it'
+
+2. CANTIDAD:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_11.png: '1' vs '3'
+     • factura_10.png: '1' vs '3'
+     • factura_1.png: '5' vs '1'
+
+3. PRECIO_UNITARIO:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: '12.000,00' vs '5.000,00'
+     • factura_10.png: '5.000,00' vs '12.000,00'
+     • factura_1.png: '2.000,00' vs '7.500,00'
+
+4. IMPORTE_BONIFICACION:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: '1.320,00' vs '1.350,00'
+     • factura_10.png: '1.350,00' vs '1.320,00'
+     • factura_1.png: '200,00' vs '75,00'
+
+5. CUIT_VENDEDOR:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+CAMPOS CON MEJOR RENDIMIENTO (Top 5):
+============================================================
+
+1. CUIT_VENDEDOR:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+2. CUIT_COMPRADOR:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+3. FECHA_EMISION:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+4. SUBTOTAL:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+5. IMPORTE_TOTAL:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+ANÁLISIS COMPLETO POR CAMPO:
+============================================================
+
+DESCRIPCION:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: 'instalación servidores' vs 'implementación de red'
+     • factura_10.png: 'implementación red' vs 'instalación de servidores'
+     • factura_1.png: 'soporte técnico' vs 'consultoría en it'
+
+CANTIDAD:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_11.png: '1' vs '3'
+     • factura_10.png: '1' vs '3'
+     • factura_1.png: '5' vs '1'
+
+PRECIO_UNITARIO:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: '12.000,00' vs '5.000,00'
+     • factura_10.png: '5.000,00' vs '12.000,00'
+     • factura_1.png: '2.000,00' vs '7.500,00'
+
+IMPORTE_BONIFICACION:
+   Precisión: 0.750 (75.0%)
+   Total evaluado: 28
+   Correctos: 21 (75.0%)
+   Incorrectos: 7 (25.0%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_10.png: '1.320,00' vs '1.350,00'
+     • factura_10.png: '1.350,00' vs '1.320,00'
+     • factura_1.png: '200,00' vs '75,00'
+
+CUIT_VENDEDOR:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+CUIT_COMPRADOR:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+FECHA_EMISION:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+SUBTOTAL:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+IMPORTE_TOTAL:
+   Precisión: 1.000 (100.0%)
+   Total evaluado: 10
+   Correctos: 10 (100.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 0 (0.0%)
+
+ANÁLISIS POR DOCUMENTO:
+============================================================
+Documentos con peor rendimiento:
+  • factura_14.png: 0.176 (17.6%)
+  • factura_1.png: 0.524 (52.4%)
+  • factura_10.png: 0.571 (57.1%)
+  • factura_18.png: 0.778 (77.8%)
+  • factura_11.png: 0.824 (82.4%)
+
+Documentos con mejor rendimiento:
+  • factura_15.png: 0.846 (84.6%)
+  • factura_16.png: 0.846 (84.6%)
+  • factura_12.png: 0.882 (88.2%)
+  • factura_13.png: 0.882 (88.2%)
+  • factura_17.png: 0.882 (88.2%)
+
+RECOMENDACIONES ESPECÍFICAS:
+============================================================
+🎯 PRIORIDAD ALTA: Mejorar el campo 'descripcion'
+   • Precisión actual: 75.0%
+   • Total evaluado: 28 veces
+   • Problema principal: CAMPOS INCORRECTOS (7 de 28)
+   • Recomendación: Mejorar precisión de extracción o validación
+
+✅ PRECISIÓN MODERADA: 88.9%
+   • Recomendación: Enfocar mejoras en campos específicos

@@ -38,7 +38,7 @@ class MetricsCalculator:
         # Campos de items estructurados (solo los que están en ground truth)
         self.structured_item_fields = [
             'descripcion', 'cantidad', 'precio_unitario', 
-            'bonificacion', 'importe_bonificacion'
+            'importe_bonificacion'  # Removido 'bonificacion' porque no existe en ground truth
         ]
         
         # NO evaluamos otros campos extraídos por OCR, solo los estructurados

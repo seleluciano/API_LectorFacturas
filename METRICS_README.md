@@ -294,3 +294,229 @@ Para problemas o preguntas sobre el sistema de métricas:
 3. Asegúrate de que los archivos de prueba sean válidos
 4. Consulta la documentación de la API en `/docs` cuando el servidor esté ejecutándose
 5. Ejecuta `python tests/test_improvements.py` para verificar las mejoras
+
+## 📋 Análisis Detallado de Campos
+
+El sistema incluye un **analizador detallado de campos** que permite identificar exactamente qué campos están causando problemas de precisión en el modelo.
+
+### 🎯 Funcionalidades del Análisis Detallado
+
+#### 1. **Comparación con Ground Truth Real**
+- Compara los campos extraídos con los datos reales del JSON
+- Identifica campos correctos, incorrectos y faltantes
+- Proporciona ejemplos específicos de errores
+
+#### 2. **Estadísticas por Campo**
+- **Precisión por campo**: Porcentaje de aciertos para cada campo
+- **Conteo de errores**: Campos correctos, incorrectos y faltantes
+- **Ejemplos de errores**: Casos específicos donde el campo falló
+
+#### 3. **Análisis por Documento**
+- Identifica documentos con mejor y peor rendimiento
+- Muestra la precisión individual de cada factura
+- Permite identificar patrones problemáticos
+
+#### 4. **Recomendaciones Específicas**
+- Prioriza campos que requieren mejora
+- Identifica si el problema es extracción o validación
+- Proporciona recomendaciones concretas de mejora
+
+### 🚀 Uso del Análisis Detallado
+
+#### 1. **Generar Reporte de Análisis**
+
+```bash
+# Análisis detallado con ground truth real
+python services/detailed_field_analysis.py
+
+# Con parámetros personalizados
+python services/detailed_field_analysis.py \
+  --benchmark-file benchmark_results/dataset_benchmark_results.json \
+  --dataset-dir "C:\Users\selel\OneDrive\Documentos\Facultad\ARPYME\creacion_dataset\dataset_facturas" \
+  --output benchmark_results/detailed_field_analysis.txt
+```
+
+#### 2. **Interpretar los Resultados**
+
+El reporte generado incluye:
+
+**📊 Resumen Ejecutivo:**
+- Total de documentos analizados
+- Total de campos analizados  
+- Precisión promedio general
+
+**⚠️ Campos con Peor Rendimiento (Top 5):**
+- Lista de campos que más afectan la precisión
+- Porcentaje de precisión específico
+- Ejemplos de errores encontrados
+
+**✅ Campos con Mejor Rendimiento (Top 5):**
+- Campos que funcionan correctamente
+- Confirmación de que el modelo extrae bien ciertos tipos de datos
+
+**📋 Análisis Completo por Campo:**
+- Estadísticas detalladas de cada campo
+- Desglose de errores (correctos, incorrectos, faltantes)
+- Ejemplos específicos de errores
+
+**📈 Análisis por Documento:**
+- Documentos con mejor y peor rendimiento
+- Identificación de facturas problemáticas
+
+**🎯 Recomendaciones Específicas:**
+- Prioridades de mejora
+- Tipos de problemas identificados
+- Acciones recomendadas
+
+### 📋 Ejemplo de Reporte
+
+```
+=== REPORTE DETALLADO DE ANÁLISIS DE CAMPOS ===
+Fecha: 2025-09-19 21:05:06
+Total de documentos analizados: 10
+
+RESUMEN EJECUTIVO:
+• Total de campos analizados: 10
+• Precisión promedio: 0.786 (78.6%)
+
+CAMPOS CON PEOR RENDIMIENTO (Top 5):
+
+1. BONIFICACION:
+   Precisión: 0.000 (0.0%)
+   Total evaluado: 28
+   Correctos: 0 (0.0%)
+   Incorrectos: 0 (0.0%)
+   Faltantes: 28 (100.0%)
+
+2. DESCRIPCION:
+   Precisión: 0.714 (71.4%)
+   Total evaluado: 28
+   Correctos: 20 (71.4%)
+   Incorrectos: 8 (28.6%)
+   Faltantes: 0 (0.0%)
+   Ejemplos de errores:
+     • factura_11.png: '' vs 'mantenimiento mensual'
+     • factura_10.png: 'instalación servidores' vs 'implementación de red'
+
+RECOMENDACIONES ESPECÍFICAS:
+🎯 PRIORIDAD ALTA: Mejorar el campo 'bonificacion'
+   • Precisión actual: 0.0%
+   • Problema principal: CAMPOS FALTANTES (28 de 28)
+   • Recomendación: Mejorar extracción/reconocimiento de este campo
+```
+
+### 🔧 Configuración del Análisis
+
+#### Parámetros Disponibles:
+
+- `--benchmark-file`: Archivo JSON de resultados del benchmark
+- `--dataset-dir`: Directorio del dataset con JSONs de ground truth
+- `--output`: Archivo de salida del reporte
+
+#### Campos Analizados:
+
+**Campos Principales:**
+- `cuit_vendedor`: CUIT del vendedor
+- `cuit_comprador`: CUIT del comprador
+- `fecha_emision`: Fecha de emisión
+- `subtotal`: Subtotal de la factura
+- `importe_total`: Importe total
+
+**Campos de Items:**
+- `descripcion`: Descripción del producto/servicio
+- `cantidad`: Cantidad del item
+- `precio_unitario`: Precio unitario
+- `bonificacion`: Porcentaje de bonificación
+- `importe_bonificacion`: Importe de la bonificación
+
+### 💡 Casos de Uso
+
+#### 1. **Identificar Problemas Específicos**
+```bash
+# Después de ejecutar un benchmark
+python services/detailed_field_analysis.py
+# Revisar el reporte para identificar campos problemáticos
+```
+
+#### 2. **Validar Mejoras del Modelo**
+```bash
+# Antes y después de mejorar el modelo
+python services/detailed_field_analysis.py --output before_improvement.txt
+# ... mejorar el modelo ...
+python services/detailed_field_analysis.py --output after_improvement.txt
+# Comparar los reportes para verificar mejoras
+```
+
+#### 3. **Análisis de Dataset Específico**
+```bash
+# Analizar un dataset específico
+python services/detailed_field_analysis.py \
+  --dataset-dir "path/to/specific/dataset" \
+  --output "analysis_specific_dataset.txt"
+```
+
+### 📊 Interpretación de Resultados
+
+#### **Precisión por Campo:**
+- **100%**: Campo funciona perfectamente
+- **80-99%**: Campo funciona bien, mejoras menores
+- **60-79%**: Campo necesita mejoras moderadas
+- **<60%**: Campo requiere atención prioritaria
+- **0%**: Campo no funciona, requiere rediseño
+
+#### **Tipos de Errores:**
+- **Campos Faltantes**: El campo no se extrae
+- **Campos Incorrectos**: El campo se extrae pero con valor incorrecto
+- **Campos Vacíos**: El campo se extrae pero está vacío
+
+#### **Recomendaciones por Tipo de Error:**
+- **Faltantes**: Mejorar patrones de extracción o reconocimiento OCR
+- **Incorrectos**: Mejorar validación o lógica de extracción
+- **Vacíos**: Revisar condiciones de extracción
+
+### 🔄 Integración con el Workflow
+
+El análisis detallado se integra perfectamente con el workflow de benchmark:
+
+1. **Ejecutar Benchmark**: `python benchmark_dataset.py --dataset-dir ...`
+2. **Generar Análisis**: `python services/detailed_field_analysis.py`
+3. **Revisar Resultados**: Analizar el reporte generado
+4. **Implementar Mejoras**: Basado en las recomendaciones
+5. **Repetir**: Ejecutar nuevo benchmark para validar mejoras
+
+### 📁 Archivos Generados
+
+- `benchmark_results/detailed_field_analysis.txt`: Reporte detallado completo
+- Incluye análisis por campo, documento y recomendaciones específicas
+
+Este sistema de análisis detallado te permite **identificar exactamente qué campos están causando problemas** y **priorizar las mejoras** de manera eficiente.
+
+## 📋 Documentación Adicional
+
+### 📊 Análisis de Rendimiento de Campos
+
+Para información detallada sobre el rendimiento actual de cada campo:
+
+- **📈 Resumen Ejecutivo**: `FIELD_PERFORMANCE_SUMMARY.md` - Vista rápida de campos problemáticos y excelentes
+- **📋 Análisis Completo**: `FIELD_PERFORMANCE_ANALYSIS.md` - Análisis detallado con métricas, ejemplos y plan de mejoras
+- **🔍 Reporte Técnico**: `benchmark_results/detailed_field_analysis.txt` - Resultados del último análisis
+
+### 🎯 Estado Actual del Sistema
+
+**Precisión Promedio**: 78.6% | **Estado**: Moderado
+
+**Campos Excelentes** (100% precisión):
+- CUIT Vendedor, CUIT Comprador, Fecha Emisión, Subtotal, Importe Total
+
+**Campos Problemáticos**:
+- 🚨 **Bonificación**: 0% (100% campos faltantes)
+- 🔴 **Descripción**: 71.4% (28.6% incorrectos)
+- 🔴 **Cantidad**: 71.4% (28.6% incorrectos)
+- 🔴 **Precio Unitario**: 71.4% (28.6% incorrectos)
+- 🔴 **Importe Bonificación**: 71.4% (28.6% incorrectos)
+
+### 🚀 Próximos Pasos Recomendados
+
+1. **Prioridad ALTA**: Rediseñar extracción de bonificaciones (0% → 70%+)
+2. **Prioridad MEDIA**: Mejorar campos de items (71.4% → 80%+)
+3. **Prioridad BAJA**: Optimizar throughput y CER/WER

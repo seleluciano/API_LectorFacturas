@@ -302,10 +302,22 @@ class InvoiceParser:
         
         # Patrones para diferentes formatos de items - Optimizados para facturas argentinas
         patterns_items = [
-            # Patrón principal para facturas argentinas - Más flexible para capturar todos los items
-            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s]{3,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)',
-            # Patrón alternativo para items con descripciones más largas
-            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s]{5,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)'
+            # Patrón principal completo: código descripción cantidad unidad precio % bonificación importe_bonificación subtotal
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)',
+            # Patrón sin subtotal: código descripción cantidad unidad precio % bonificación importe_bonificación
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)',
+            # Patrón sin bonificación (0%): código descripción cantidad unidad precio 0% subtotal
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+0%\s+([\d.,]+)',
+            # Patrón simple sin unidad: código descripción cantidad precio
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+(\d+)\s+([\d.,]+)',
+            # Patrón con descripciones más largas (5+ caracteres)
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{5,}?)\s+(\d+)\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)',
+            # Patrón alternativo sin "unidad": código descripción cantidad precio % bonificación
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+(\d+)\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)',
+            # Patrón muy flexible: código descripción cantidad precio
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{2,}?)\s+(\d+)\s+([\d.,]+)',
+            # NUEVO: Patrón para "y unidad" (error de OCR, asumir cantidad = 1)
+            r'(\d+)\s+([A-Za-záéíóúñÁÉÍÓÚÑ\s\-\.]{3,}?)\s+y\s+unidad\s+([\d.,]+)\s+(\d+%)\s+([\d.,]+)\s+([\d.,]+)'
         ]
         
         # Procesar cada patrón de items y evitar duplicados
@@ -340,16 +352,93 @@ class InvoiceParser:
     def _process_item_match_generic(self, match, pattern_idx):
         """Procesa un match de item según el patrón usado"""
         try:
-            # Ambos patrones tienen el mismo formato
-            if pattern_idx in [0, 1]:  # Formato estándar para facturas argentinas
+            if pattern_idx == 0:  # Patrón completo con todos los campos
                 return {
                     'codigo': match[0],
                     'descripcion': self._clean_item_description(match[1]),
                     'cantidad': match[2],
                     'unidad_medida': 'unidad',
                     'precio_unitario': match[3],
+                    'bonificacion': match[4],
                     'importe_bonificacion': match[5],
                     'subtotal': match[6]
+                }
+            elif pattern_idx == 1:  # Patrón sin subtotal
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': match[4],
+                    'importe_bonificacion': match[5],
+                    'subtotal': '0.00'
+                }
+            elif pattern_idx == 2:  # Patrón sin bonificación (0%)
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': '0%',
+                    'importe_bonificacion': '0.00',
+                    'subtotal': match[4]
+                }
+            elif pattern_idx == 3:  # Patrón simple sin unidad
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': '0%',
+                    'importe_bonificacion': '0.00',
+                    'subtotal': '0.00'
+                }
+            elif pattern_idx == 4:  # Patrón con descripciones largas (completo)
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': match[4],
+                    'importe_bonificacion': match[5],
+                    'subtotal': match[6]
+                }
+            elif pattern_idx == 5:  # Patrón sin unidad pero con bonificación
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': match[4],
+                    'importe_bonificacion': match[5],
+                    'subtotal': '0.00'
+                }
+            elif pattern_idx == 6:  # Patrón muy flexible
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': match[2],
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[3],
+                    'bonificacion': '0%',
+                    'importe_bonificacion': '0.00',
+                    'subtotal': '0.00'
+                }
+            elif pattern_idx == 7:  # Patrón "y unidad" (sin cantidad explícita)
+                return {
+                    'codigo': match[0],
+                    'descripcion': self._clean_item_description(match[1]),
+                    'cantidad': '1',  # Asumir cantidad 1 cuando no está explícita
+                    'unidad_medida': 'unidad',
+                    'precio_unitario': match[2],
+                    'bonificacion': match[3],
+                    'importe_bonificacion': match[4],
+                    'subtotal': match[5]
                 }
         except (ValueError, IndexError) as e:
             logger.debug(f"Error procesando item match: {e}")
@@ -368,11 +457,11 @@ class InvoiceParser:
         """Valida que el item tenga información mínima requerida"""
         descripcion = item.get('descripcion', '').strip()
         
-        # Validaciones menos estrictas para mejorar detección
+        # Validaciones más flexibles para mejorar detección
         return (item.get('codigo') and 
                 descripcion and 
                 len(descripcion) > 2 and  # Descripción debe tener al menos 3 caracteres
-                not descripcion.lower() in ['unidad', 'item', 'producto', 'servicio', 'cantidad', 'medida'],  # Evitar palabras genéricas
+                not descripcion.lower() in ['unidad', 'item', 'producto', 'servicio', 'cantidad', 'medida', 'precio', 'total', 'bonificación', 'subtotal'],  # Evitar palabras genéricas
                 item.get('precio_unitario') and
                 item.get('cantidad') and
                 # Verificar que el código sea un número válido
@@ -380,7 +469,13 @@ class InvoiceParser:
                 # Verificar que la cantidad sea un número válido
                 item.get('cantidad', '').isdigit() and
                 # Validar que no sea solo números
-                not descripcion.isdigit())
+                not descripcion.isdigit() and
+                # Asegurar que la descripción no sea solo espacios o caracteres especiales
+                len(descripcion.replace(' ', '').replace('-', '').replace('.', '')) > 2 and
+                # Verificar que el precio sea válido (no vacío y no solo caracteres especiales)
+                item.get('precio_unitario', '').replace(',', '').replace('.', '').isdigit() and
+                # Evitar items que sean solo códigos o números
+                not descripcion.lower() in [item.get('codigo', ''), item.get('cantidad', ''), item.get('precio_unitario', '')])
     
     def _process_item_match(self, match, has_quantity=True):
         """Procesa un match de item y retorna el diccionario correspondiente"""
