@@ -1,0 +1,25 @@
+
+=== REPORTE DE RENDIMIENTO DEL MODELO ===
+Fecha: 2025-09-21 17:05:34
+
+RESUMEN DEL LOTE:
+- Total de archivos: 15
+- Archivos procesados exitosamente: 15
+- Archivos fallidos: 0
+- Tasa de éxito: 100.00%
+- Tiempo total de procesamiento: 29.14 segundos
+
+MÉTRICAS DE RENDIMIENTO:
+- Throughput: 0.51 documentos/segundo
+- Tiempo promedio por documento: 7.35 segundos
+- Confidence Score promedio: 0.796
+
+MÉTRICAS DE CALIDAD:
+
+- Precisión de campos promedio: 0.676
+- CER (Character Error Rate) promedio: 0.697
+- WER (Word Error Rate) promedio: 0.926
+- Total de campos evaluados: 227
+- Campos correctos totales: 148
+- Campos faltantes totales: 32
+- Campos incorrectos totales: 17
