@@ -62,22 +62,62 @@ def setup_environment():
     
     print("✅ Entorno configurado")
 
+def config_jupyter_remote():
+    """Configurar Jupyter para acceso remoto"""
+    print("🌐 Configurando Jupyter para acceso remoto...")
+    
+    try:
+        # Generar configuración si no existe
+        subprocess.run([
+            sys.executable, "-m", "jupyter", "lab", "--generate-config"
+        ], capture_output=True)
+        
+        # Obtener ruta del archivo de configuración
+        home = Path.home()
+        config_file = home / ".jupyter" / "jupyter_lab_config.py"
+        
+        # Configuración para acceso remoto
+        config_content = """
+# Configuración para acceso remoto
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.port = 8889
+c.ServerApp.open_browser = False
+c.ServerApp.allow_root = True
+c.ServerApp.token = ''
+c.ServerApp.password = ''
+c.ServerApp.disable_check_xsrf = True
+"""
+        
+        # Escribir configuración
+        with open(config_file, 'a') as f:
+            f.write(config_content)
+        
+        print("✅ Jupyter configurado para acceso remoto")
+        
+    except Exception as e:
+        print(f"⚠️ Error configurando Jupyter: {e}")
+        print("💡 Se usará configuración por defecto")
+
 def start_jupyter_lab():
     """Iniciar Jupyter Lab"""
     print("🚀 Iniciando Jupyter Lab...")
     
     try:
+        # Configurar Jupyter para acceso remoto
+        config_jupyter_remote()
+        
         # Iniciar Jupyter Lab
         process = subprocess.Popen([
             sys.executable, "-m", "jupyter", "lab",
             "--ip=0.0.0.0",
-            "--port=8888",
+            "--port=8889",
             "--no-browser",
             "--allow-root"
         ])
         
         print("✅ Jupyter Lab iniciado")
-        print("🌐 Accede a: http://localhost:8888")
+        print("🌐 Accede desde tu máquina local a:")
+        print("   http://IP_DEL_SERVIDOR:8889")
         print("📝 Abre el notebook: api_jupyter.ipynb")
         print("🛑 Presiona Ctrl+C para detener")
         
