@@ -1,33 +1,33 @@
 # Guía de Despliegue - API de Procesamiento de Imágenes
 
-Esta guía te ayudará a desplegar tu API de procesamiento de imágenes con OCR en un servidor.
+Esta guía te ayudará a desplegar tu API de procesamiento de imágenes con OCR en un servidor usando Jupyter.
 
 ## 📋 Requisitos Previos
 
 ### En tu máquina local:
-- Docker Desktop instalado
-- Docker Compose instalado
+- Python 3.8+ instalado
 - Git instalado
 
 ### En el servidor:
 - Ubuntu 20.04+ o CentOS 8+ (recomendado)
-- Docker instalado
-- Docker Compose instalado
-- Nginx (opcional, para proxy reverso)
+- Python 3.8+ instalado
+- Tesseract OCR instalado
+- Jupyter instalado
 
 ## 🚀 Opciones de Despliegue
 
-### Opción 1: Despliegue Local con Docker (Desarrollo)
+### Opción 1: Despliegue Local con Jupyter (Desarrollo)
 
 ```bash
 # Clonar el repositorio
 git clone <tu-repositorio>
 cd Api
 
-# Ejecutar script de despliegue
-./deploy.sh desarrollo
-# O en Windows:
-.\deploy.ps1 desarrollo
+# Instalar dependencias
+python install_jupyter_dependencies.py
+
+# Iniciar Jupyter
+python start_jupyter.py
 ```
 
 ### Opción 2: Despliegue en Servidor (Producción)
@@ -38,18 +38,15 @@ cd Api
 # Conectar al servidor
 ssh usuario@tu-servidor.com
 
-# Instalar Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
+# Instalar Python y dependencias del sistema
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
 
-# Instalar Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# Instalar Tesseract OCR
+sudo apt install tesseract-ocr tesseract-ocr-spa tesseract-ocr-eng
 
-# Reiniciar sesión para aplicar cambios
-exit
-ssh usuario@tu-servidor.com
+# Instalar dependencias adicionales
+sudo apt install libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
 ```
 
 #### Paso 2: Subir el código
@@ -63,24 +60,36 @@ cd Api
 scp -r . usuario@tu-servidor.com:/ruta/destino/
 ```
 
-#### Paso 3: Configurar variables de entorno
+#### Paso 3: Configurar entorno virtual
 
 ```bash
-# Copiar archivo de producción
-cp env.production .env
+# Crear entorno virtual
+python3 -m venv venv
+source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+python install_jupyter_dependencies.py
+```
+
+#### Paso 4: Configurar variables de entorno
+
+```bash
+# Copiar archivo de configuración
+cp env.local .env
 
 # Editar configuración si es necesario
 nano .env
 ```
 
-#### Paso 4: Desplegar
+#### Paso 5: Desplegar
 
 ```bash
-# Hacer ejecutable el script
-chmod +x deploy.sh
+# Iniciar Jupyter
+python start_jupyter.py
 
-# Desplegar en producción
-./deploy.sh produccion
+# O iniciar directamente la API
+python start_server.py
 ```
 
 ## 🔧 Configuración Avanzada
@@ -90,38 +99,40 @@ chmod +x deploy.sh
 ```bash
 # En el archivo .env
 HOST=0.0.0.0                    # Host de la API
-PORT=8000                       # Puerto de la API
-DEBUG=False                     # Modo debug (False en producción)
+PORT=8080                       # Puerto de la API
+DEBUG=True                      # Modo debug
 MAX_FILE_SIZE=10485760          # Tamaño máximo de archivo (10MB)
 TESSERACT_PATH=/usr/bin/tesseract  # Ruta a Tesseract en Linux
+FAST_MODE=True                  # Modo rápido para mejor rendimiento
 ```
 
-### Configuración de Nginx (Opcional)
-
-Si quieres usar Nginx como proxy reverso:
+### Configuración de Tesseract
 
 ```bash
-# Instalar Nginx
-sudo apt update
-sudo apt install nginx
+# Verificar instalación
+tesseract --version
 
-# Configurar Nginx
-sudo cp nginx.conf /etc/nginx/sites-available/api
-sudo ln -s /etc/nginx/sites-available/api /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
+# Instalar idiomas adicionales
+sudo apt install tesseract-ocr-spa tesseract-ocr-eng
+
+# Verificar idiomas disponibles
+tesseract --list-langs
 ```
 
-### Configuración de SSL (Producción)
+### Configuración de Jupyter
 
 ```bash
-# Generar certificados SSL (usando Let's Encrypt)
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d tu-dominio.com
+# Configurar Jupyter para acceso remoto
+jupyter lab --generate-config
 
-# O usar certificados propios
-mkdir ssl
-# Copiar cert.pem y key.pem a la carpeta ssl/
+# Editar configuración
+nano ~/.jupyter/jupyter_lab_config.py
+
+# Agregar estas líneas:
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.port = 8888
+c.ServerApp.open_browser = False
+c.ServerApp.allow_root = True
 ```
 
 ## 📊 Monitoreo y Logs
@@ -129,18 +140,22 @@ mkdir ssl
 ### Ver logs de la aplicación
 
 ```bash
-# Ver logs en tiempo real
-./deploy.sh logs
+# Ver logs de Jupyter
+jupyter lab --log-level=DEBUG
 
-# Ver estado de servicios
-./deploy.sh status
+# Ver logs de la API
+python start_server.py
+
+# Ver procesos en ejecución
+ps aux | grep python
+ps aux | grep jupyter
 ```
 
 ### Logs importantes
 
-- **Aplicación**: `docker-compose logs api`
-- **Nginx**: `/var/log/nginx/access.log` y `/var/log/nginx/error.log`
-- **Sistema**: `journalctl -u docker`
+- **Aplicación**: Salida directa de `python start_server.py`
+- **Jupyter**: `~/.jupyter/jupyter_lab_config.py`
+- **Sistema**: `journalctl -u jupyter` (si está como servicio)
 
 ## 🔄 Actualizaciones
 
@@ -148,13 +163,17 @@ mkdir ssl
 
 ```bash
 # Parar servicios
-./deploy.sh stop
+pkill -f jupyter
+pkill -f python
 
 # Actualizar código
 git pull origin main
 
-# Reconstruir y desplegar
-./deploy.sh produccion
+# Actualizar dependencias
+pip install -r requirements.txt
+
+# Reiniciar servicios
+python start_jupyter.py
 ```
 
 ### Backup de datos
@@ -163,54 +182,43 @@ git pull origin main
 # Backup de archivos temporales
 tar -czf backup-$(date +%Y%m%d).tar.gz temp_uploads/
 
-# Backup de logs
-tar -czf logs-backup-$(date +%Y%m%d).tar.gz logs/
+# Backup de notebooks
+tar -czf notebooks-backup-$(date +%Y%m%d).tar.gz *.ipynb
 ```
 
 ## 🛠️ Comandos Útiles
 
-### Script de despliegue
+### Comandos de Jupyter
 
 ```bash
-# Desarrollo
-./deploy.sh desarrollo
+# Iniciar Jupyter
+python start_jupyter.py
 
-# Producción
-./deploy.sh produccion
+# Iniciar directamente la API
+python start_server.py
 
-# Parar servicios
-./deploy.sh stop
+# Instalar dependencias
+python install_jupyter_dependencies.py
 
-# Ver estado
-./deploy.sh status
-
-# Ver logs
-./deploy.sh logs
-
-# Limpiar sistema
-./deploy.sh cleanup
-
-# Ayuda
-./deploy.sh help
+# Ver procesos en ejecución
+ps aux | grep jupyter
+ps aux | grep python
 ```
 
-### Docker Compose directo
+### Comandos de Python
 
 ```bash
-# Construir imagen
-docker-compose build
+# Activar entorno virtual
+source venv/bin/activate
 
-# Ejecutar en background
-docker-compose up -d
+# Instalar dependencias
+pip install -r requirements.txt
 
-# Ver logs
-docker-compose logs -f
+# Ejecutar tests
+python -m pytest tests/
 
-# Parar servicios
-docker-compose down
-
-# Limpiar volúmenes
-docker-compose down -v
+# Verificar instalación
+python -c "import fastapi, uvicorn; print('✅ Dependencias OK')"
 ```
 
 ## 🚨 Solución de Problemas
@@ -219,73 +227,78 @@ docker-compose down -v
 
 ```bash
 # Ver qué proceso usa el puerto
-sudo netstat -tulpn | grep :8000
+sudo netstat -tulpn | grep :8080
 
 # Matar proceso
 sudo kill -9 <PID>
-```
 
-### Error: Permisos de Docker
-
-```bash
-# Agregar usuario al grupo docker
-sudo usermod -aG docker $USER
-
-# Reiniciar sesión
-exit
-ssh usuario@servidor
-```
-
-### Error: Memoria insuficiente
-
-```bash
-# Ver uso de memoria
-docker stats
-
-# Limpiar sistema Docker
-docker system prune -a
+# O cambiar puerto en .env
+nano .env
+# Cambiar PORT=8080 por PORT=3000
 ```
 
 ### Error: Tesseract no encontrado
 
 ```bash
-# Verificar instalación en contenedor
-docker-compose exec api tesseract --version
+# Instalar Tesseract
+sudo apt install tesseract-ocr tesseract-ocr-spa
 
-# Reconstruir imagen
-docker-compose build --no-cache
+# Verificar instalación
+tesseract --version
+
+# Verificar ruta en .env
+nano .env
+# TESSERACT_PATH=/usr/bin/tesseract
+```
+
+### Error: Dependencias faltantes
+
+```bash
+# Reinstalar dependencias
+pip install -r requirements.txt
+python install_jupyter_dependencies.py
+
+# Verificar instalación
+python -c "import fastapi, uvicorn, jupyter; print('✅ OK')"
+```
+
+### Error: Jupyter no inicia
+
+```bash
+# Verificar instalación
+jupyter --version
+
+# Reinstalar Jupyter
+pip install --upgrade jupyter jupyterlab
+
+# Verificar configuración
+jupyter lab --generate-config
 ```
 
 ## 📈 Optimización de Rendimiento
 
-### Configuración de recursos
+### Configuración de Python
 
-```yaml
-# En docker-compose.yml
-services:
-  api:
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: '1.0'
-        reservations:
-          memory: 1G
-          cpus: '0.5'
+```bash
+# En .env
+FAST_MODE=True
+DEBUG=False
+MAX_FILE_SIZE=10485760
+
+# Configuración de Tesseract
+OCR_CONFIG={"lang": "spa+eng", "config": "--psm 3 --oem 3"}
 ```
 
-### Configuración de Nginx
+### Configuración de Jupyter
 
-```nginx
-# En nginx.conf
-worker_processes auto;
-worker_connections 1024;
-
-# Cache de archivos estáticos
-location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
+```bash
+# En ~/.jupyter/jupyter_lab_config.py
+c.ServerApp.port = 8888
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.open_browser = False
+c.ServerApp.allow_root = True
+c.ServerApp.token = ''
+c.ServerApp.password = ''
 ```
 
 ## 🔒 Seguridad
@@ -295,8 +308,8 @@ location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
 ```bash
 # Permitir solo puertos necesarios
 sudo ufw allow 22    # SSH
-sudo ufw allow 80    # HTTP
-sudo ufw allow 443   # HTTPS
+sudo ufw allow 8888  # Jupyter
+sudo ufw allow 8080  # API
 sudo ufw enable
 ```
 
@@ -315,14 +328,14 @@ export MAX_FILE_SIZE=10485760
 
 Si tienes problemas con el despliegue:
 
-1. Revisa los logs: `./deploy.sh logs`
-2. Verifica el estado: `./deploy.sh status`
-3. Consulta la documentación de Docker
+1. Revisa los logs: `python start_server.py`
+2. Verifica el estado: `ps aux | grep python`
+3. Consulta la documentación de Jupyter
 4. Revisa los issues del repositorio
 
 ## 🎯 URLs Importantes
 
+- **Jupyter Lab**: http://localhost:8888
 - **API**: http://localhost:8080
 - **Documentación**: http://localhost:8080/docs
 - **Health Check**: http://localhost:8080/health
-- **Nginx** (si está configurado): http://localhost
