@@ -30,6 +30,7 @@ def main():
         "requests",
         "uvicorn[standard]",
         "fastapi",
+        "starlette",
         "python-multipart",
         "layoutparser",
         "pytesseract",
