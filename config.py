@@ -17,6 +17,10 @@ class Settings:
     PORT = int(os.getenv("PORT", 8000))
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
     
+    # Configuración de producción
+    WORKERS = int(os.getenv("WORKERS", 1))  # Para Docker, usar 1 worker
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "info")
+    
     # Configuración de archivos
     UPLOAD_DIR = os.getenv("UPLOAD_DIR", "temp_uploads")
     MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", 10 * 1024 * 1024))  # 10MB
