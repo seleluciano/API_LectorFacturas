@@ -21,7 +21,7 @@ def main():
     
     # Configuración del servidor
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 8080))
+    port = int(os.getenv("PORT", 8081))
     debug = os.getenv("DEBUG", "False").lower() == "true"
     log_level = os.getenv("LOG_LEVEL", "info").lower()
     workers = int(os.getenv("WORKERS", 1))

@@ -1,11 +1,10 @@
 """
 Procesador avanzado de imágenes usando scikit-image
 Alternativa más moderna a OpenCV con algoritmos mejorados
+Versión compatible con Windows sin Detectron2
 """
 import numpy as np
 import pytesseract
-import layoutparser as lp
-from layoutparser.models import Detectron2LayoutModel
 from PIL import Image
 import time
 import logging
@@ -18,6 +17,22 @@ from skimage import filters, morphology, exposure, restoration
 from skimage.filters import threshold_otsu, gaussian
 from skimage.morphology import disk, opening, closing
 from skimage.restoration import denoise_bilateral
+
+# Importación condicional de layoutparser
+try:
+    import layoutparser as lp
+    LAYOUTPARSER_AVAILABLE = True
+except ImportError:
+    LAYOUTPARSER_AVAILABLE = False
+    logging.warning("LayoutParser no está disponible. Usando procesamiento básico.")
+
+# Importación condicional de Detectron2
+try:
+    from layoutparser.models import Detectron2LayoutModel
+    DETECTRON2_AVAILABLE = True
+except ImportError:
+    DETECTRON2_AVAILABLE = False
+    logging.warning("Detectron2 no está disponible. Usando procesamiento alternativo.")
 
 from models import TextBlock, Table, Figure, ProcessingResult, ProcessingStatus
 from config import settings
@@ -59,7 +74,12 @@ class AdvancedImageProcessor:
             raise
     
     def _load_layout_model(self):
-        """Cargar el modelo de LayoutParser"""
+        """Cargar el modelo de LayoutParser (si está disponible)"""
+        if not DETECTRON2_AVAILABLE or not LAYOUTPARSER_AVAILABLE:
+            logger.warning("Detectron2 o LayoutParser no están disponibles. Usando procesamiento básico.")
+            self.layout_model = None
+            return
+            
         try:
             self.layout_model = Detectron2LayoutModel(
                 config_path=settings.LAYOUT_MODEL_CONFIG["model_name"],
@@ -167,29 +187,69 @@ class AdvancedImageProcessor:
                 raise ValueError(f"No se pudo procesar la imagen: {image_path}")
     
     def detect_layout(self, image: np.ndarray) -> List[Dict[str, Any]]:
-        """Detectar layout usando LayoutParser"""
+        """Detectar layout usando LayoutParser o método alternativo"""
         layout_elements = []
         
         try:
-            if self.layout_model is None:
-                logger.warning("Modelo de LayoutParser no disponible")
-                return layout_elements
-            
-            pil_image = Image.fromarray(image)
-            layout = self.layout_model.detect(pil_image)
-            
-            for element in layout:
-                bbox = element.coordinates
-                layout_elements.append({
-                    "type": element.type,
-                    "bbox": [bbox.x_1, bbox.y_1, bbox.x_2, bbox.y_2],
-                    "confidence": element.score
-                })
-            
-            logger.info(f"Detectados {len(layout_elements)} elementos de layout")
+            if self.layout_model is not None and DETECTRON2_AVAILABLE:
+                # Usar LayoutParser si está disponible
+                pil_image = Image.fromarray(image)
+                layout = self.layout_model.detect(pil_image)
+                
+                for element in layout:
+                    bbox = element.coordinates
+                    layout_elements.append({
+                        "type": element.type,
+                        "bbox": [bbox.x_1, bbox.y_1, bbox.x_2, bbox.y_2],
+                        "confidence": element.score
+                    })
+                
+                logger.info(f"Detectados {len(layout_elements)} elementos de layout con LayoutParser")
+            else:
+                # Método alternativo: dividir la imagen en regiones básicas
+                logger.info("Usando detección de layout alternativa")
+                layout_elements = self._detect_layout_alternative(image)
+                logger.info(f"Detectados {len(layout_elements)} elementos de layout con método alternativo")
             
         except Exception as e:
             logger.error(f"Error en detección de layout: {str(e)}")
+            # Fallback al método alternativo
+            layout_elements = self._detect_layout_alternative(image)
+        
+        return layout_elements
+    
+    def _detect_layout_alternative(self, image: np.ndarray) -> List[Dict[str, Any]]:
+        """Método alternativo para detectar layout sin LayoutParser"""
+        layout_elements = []
+        
+        try:
+            height, width = image.shape[:2]
+            
+            # Dividir la imagen en regiones horizontales básicas
+            # Esto es una aproximación simple para detectar diferentes secciones
+            num_regions = 4
+            region_height = height // num_regions
+            
+            for i in range(num_regions):
+                y1 = i * region_height
+                y2 = min((i + 1) * region_height, height)
+                
+                # Crear región de texto básica
+                layout_elements.append({
+                    "type": "Text",
+                    "bbox": [0, y1, width, y2],
+                    "confidence": 0.8
+                })
+            
+            # Agregar una región completa como fallback
+            layout_elements.append({
+                "type": "Text",
+                "bbox": [0, 0, width, height],
+                "confidence": 0.7
+            })
+            
+        except Exception as e:
+            logger.error(f"Error en detección alternativa de layout: {str(e)}")
         
         return layout_elements
     

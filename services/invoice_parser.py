@@ -69,23 +69,36 @@ class InvoiceParser:
                 r'C\.U\.I\.T\.\s+(?:Comprador|Cliente)\s*[:\s]*(\d{2}-\d{8}-\d{1})'
             ],
             'condicion_iva_comprador': [
-                # Patrones genéricos para condición frente al IVA
-                r'Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
-                r'IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
-                r'Tipo\s+de\s+IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|$))',
-                # Patrones específicos para diferentes formatos
-                r'DNI\s*[:\s]*\d{2}-\d{8}-\d{1}.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición))'
+                # Patrones específicos para el comprador (después del DNI)
+                r'DNI\s*[:\s]*\d{2}-\d{8}-\d{1}.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|$))',
+                # Patrones más específicos para facturas argentinas
+                r'Apellido\s+y\s+Nombre.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|$))',
+                r'Razón\s+Social.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|$))',
+                # Patrones genéricos mejorados
+                r'Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|Venta|$))',
+                r'IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|Venta|$))',
+                r'Tipo\s+de\s+IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Fecha|Venta|$))',
+                # Patrones específicos para condiciones comunes
+                r'(Responsable\s+Inscripto|Monotributista|Exento|No\s+Responsable|Consumidor\s+Final)(?=\s+(?:Domicilio|Condición|Venta|$))',
+                # Patrón para detectar después de datos del comprador
+                r'[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+.*?Condici[oó]n\s+(?:frente\s+al\s+)?IVA\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:Domicilio|Condición|Venta|$))'
             ],
             'condicion_venta': [
-                r'Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
-                r'Forma\s+de\s+pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
-                r'Pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
-                r'Venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:$|\n|[A-Z]))',
-                # Patrones específicos para facturas argentinas
-                r'Condici[oó]n\s+de\s+venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))',
-                r'Condici[oó]n\s+de\s+venta\s*[:\s]*(Contado|Crédito|Transferencia|Efectivo)',
-                # Patrón más directo
-                r'(?:Condición de venta|Condición venta)\s*[:\s]*(Contado|Crédito|Transferencia|Efectivo)'
+                # Patrones específicos para condición de venta después de datos del comprador
+                r'DNI\s*[:\s]*\d{2}-\d{8}-\d{1}.*?Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))',
+                r'Apellido\s+y\s+Nombre.*?Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))',
+                r'Razón\s+Social.*?Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))',
+                # Patrones genéricos mejorados
+                r'Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$|\n|[A-Z]))',
+                r'Forma\s+de\s+pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$|\n|[A-Z]))',
+                r'Pago\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$|\n|[A-Z]))',
+                r'Venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$|\n|[A-Z]))',
+                # Patrones específicos para condiciones comunes
+                r'(Contado|Crédito|Transferencia|Efectivo|Tarjeta|Cheque)(?=\s+(?:\[|Producto|$|\n|[A-Z]))',
+                # Patrones más directos
+                r'(?:Condición de venta|Condición venta)\s*[:\s]*(Contado|Crédito|Transferencia|Efectivo)',
+                # Patrón para detectar después de datos del comprador
+                r'[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+.*?Condici[oó]n\s+(?:de\s+)?venta\s*[:\s]*([A-Za-zÁÉÍÓÚÑáéíóúñ\s]+?)(?=\s+(?:\[|Producto|$))'
             ],
             'fecha_emision': [
                 r'Fecha\s+(?:de\s+)?(?:Emisión|Factura)\s*[:\s]*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})',
@@ -273,6 +286,42 @@ class InvoiceParser:
                         # Limitar longitud
                         if len(value) > 40:
                             value = value[:40].strip()
+                    elif field_name in ['condicion_iva_comprador', 'condicion_venta']:
+                        # Para condiciones, limpieza específica
+                        value = re.sub(r'[^a-zA-ZÁÉÍÓÚÑáéíóúñ\s]', '', value)
+                        value = re.sub(r'\s+', ' ', value).strip()
+                        # Normalizar valores comunes
+                        if field_name == 'condicion_iva_comprador':
+                            # Normalizar condiciones IVA
+                            value_lower = value.lower()
+                            if 'responsable' in value_lower and 'inscripto' in value_lower:
+                                value = 'Responsable Inscripto'
+                            elif 'monotributista' in value_lower:
+                                value = 'Monotributista'
+                            elif 'exento' in value_lower:
+                                value = 'Exento'
+                            elif 'no responsable' in value_lower:
+                                value = 'No Responsable'
+                            elif 'consumidor final' in value_lower:
+                                value = 'Consumidor Final'
+                        elif field_name == 'condicion_venta':
+                            # Normalizar condiciones de venta
+                            value_lower = value.lower()
+                            if 'contado' in value_lower:
+                                value = 'Contado'
+                            elif 'crédito' in value_lower or 'credito' in value_lower:
+                                value = 'Crédito'
+                            elif 'transferencia' in value_lower:
+                                value = 'Transferencia'
+                            elif 'efectivo' in value_lower:
+                                value = 'Efectivo'
+                            elif 'tarjeta' in value_lower:
+                                value = 'Tarjeta'
+                            elif 'cheque' in value_lower:
+                                value = 'Cheque'
+                        # Limitar longitud
+                        if len(value) > 30:
+                            value = value[:30].strip()
                     else:
                         # Para otros campos, limpieza básica (mantener acentos)
                         value = re.sub(r'[^a-zA-ZÁÉÍÓÚÑáéíóúñ0-9\s\-.,/$%]', '', value)

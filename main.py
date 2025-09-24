@@ -364,7 +364,17 @@ async def process_multiple_images(files: List[UploadFile] = File(...)):
     try:
         # Validar que se envíen archivos
         if not files:
-            raise HTTPException(status_code=400, detail="No se enviaron archivos")
+            raise HTTPException(
+                status_code=400, 
+                detail={
+                    "error": "missing_files",
+                    "message": "No se enviaron archivos",
+                    "expected_format": "multipart/form-data con campo 'files'",
+                    "example": "curl -X POST /process-multiple-images -F 'files=@archivo1.jpg' -F 'files=@archivo2.png'",
+                    "supported_formats": list(settings.ALLOWED_EXTENSIONS),
+                    "max_file_size_mb": settings.MAX_FILE_SIZE / (1024*1024)
+                }
+            )
         
         # Validar límite de archivos
         if len(files) > 10:  # Límite de 10 archivos
