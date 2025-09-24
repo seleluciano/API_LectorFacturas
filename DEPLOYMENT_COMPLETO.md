@@ -323,6 +323,104 @@ netstat -tulpn | grep -E "(8080|8083)"
 - **Swagger UI**: `https://def456.serveo.net/docs`
 - **ReDoc**: `https://def456.serveo.net/redoc`
 
+## 🔗 Nuevos Endpoints para Integración con API Externa
+
+### **Endpoints de Facturas con API Externa:**
+
+#### **1. Procesar y Enviar Factura**
+```bash
+POST /process-and-send-factura
+```
+- **Descripción**: Procesa una factura y envía los datos a la API externa de gestión
+- **Parámetros**: `file` (UploadFile)
+- **Respuesta**: Datos procesados + respuesta de API externa
+
+#### **2. Solo Procesar Factura**
+```bash
+POST /process-factura-only
+```
+- **Descripción**: Procesa una factura sin enviar a API externa
+- **Parámetros**: `file` (UploadFile)
+- **Respuesta**: Solo datos procesados localmente
+
+#### **3. Health Check Mejorado**
+```bash
+GET /health
+```
+- **Descripción**: Verifica estado de la API y conectividad con API externa
+- **Respuesta**: Estado local + estado de API externa
+
+### **Configuración de API Externa:**
+
+#### **Variables de Entorno:**
+```bash
+# Configurar en .env o variables de sistema
+FACTURAS_API_KEY=tu_api_key_aqui  # Opcional, para autenticación
+```
+
+#### **URL de API Externa:**
+- **Por defecto**: `http://127.0.0.1:8000`
+- **Endpoint**: `/api/gestion/facturas/cargar-imagenes/`
+- **Método**: POST
+- **Formato**: JSON
+
+### **Ejemplo de Uso:**
+
+#### **Procesar y Enviar Factura:**
+```bash
+curl -X POST "https://tu-api.serveo.net/process-and-send-factura" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@factura.png"
+```
+
+#### **Solo Procesar:**
+```bash
+curl -X POST "https://tu-api.serveo.net/process-factura-only" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@factura.png"
+```
+
+#### **Verificar Estado:**
+```bash
+curl "https://tu-api.serveo.net/health"
+```
+
+### **Estructura de Datos Enviados:**
+
+```json
+{
+  "imagen_procesada": {
+    "filename": "factura.png",
+    "file_size": 1024000,
+    "content_type": "image/png",
+    "processing_time": 2.5
+  },
+  "metadatos": {
+    "nombre_archivo": "factura.png",
+    "tamaño": 1024000,
+    "tipo": "image/png",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "processor": "scikit-image"
+  },
+  "resultado_ocr": {
+    "raw_text": "texto extraído...",
+    "confidence": 0.95
+  },
+  "campos_extraidos": {
+    "tipo_factura": "A",
+    "razon_social_vendedor": "Empresa S.A.",
+    "cuit_vendedor": "20-12345678-9",
+    "importe_total": 1000.00
+  },
+  "metricas": {
+    "text_blocks_count": 15,
+    "tables_count": 2,
+    "figures_count": 1,
+    "layout_elements_count": 18
+  }
+}
+```
+
 ## 💡 Consejos
 
 1. **Mantén las 4 terminales abiertas** mientras uses el sistema

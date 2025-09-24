@@ -24,6 +24,12 @@ from services.advanced_image_processor import AdvancedImageProcessor
 from services.metrics_calculator import MetricsCalculator
 from services.batch_processor import BatchProcessor
 from utils.file_utils import validate_file_type, validate_file_size, save_upload_file, cleanup_file
+from external_api_client import facturas_client
+from config_external import get_config
+from fastapi import Request
+import json
+from auto_discover_url import url_discoverer
+import asyncio
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +64,9 @@ image_processor = AdvancedImageProcessor()
 metrics_calculator = MetricsCalculator()
 batch_processor = BatchProcessor()
 
+# Variable global para la URL descubierta
+discovered_callback_url = None
+
 @app.get("/")
 async def root():
     """Endpoint de bienvenida"""
@@ -70,6 +79,11 @@ async def root():
             "process_multiple_images": "/process-multiple-images (INTELIGENTE - múltiples archivos)",
             "process_invoice": "/process-invoice (solo facturas)",
             "process_invoices_structured": "/process-invoices-structured (solo facturas estructuradas)",
+            "process_and_send_factura": "/process-and-send-factura (procesar y enviar a API externa)",
+            "process_factura_only": "/process-factura-only (solo procesar, sin enviar)",
+            "receive_external_response": "/api/external/response (recibir respuesta de API externa)",
+            "receive_external_status": "/api/external/status (recibir estado de API externa)",
+            "callback_urls": "/callback-urls (obtener URLs de callback actuales)",
             "evaluate_metrics": "/evaluate-metrics (evaluar métricas del modelo)",
             "batch_benchmark": "/batch-benchmark (benchmark de lotes)"
         }
@@ -78,7 +92,29 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Endpoint para verificar el estado de la API"""
-    return {"status": "healthy", "message": "API funcionando correctamente"}
+    # Verificar conectividad con API externa
+    external_api_status = await facturas_client.verificar_conectividad()
+    
+    return {
+        "status": "healthy", 
+        "message": "API funcionando correctamente",
+        "external_api_connected": external_api_status,
+        "external_api_url": facturas_client.base_url
+    }
+
+@app.get("/callback-urls")
+async def get_callback_urls():
+    """Endpoint para obtener las URLs de callback actuales"""
+    global discovered_callback_url
+    base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://tu-api.serveo.net")
+    
+    return {
+        "base_url": base_url,
+        "callback_url": f"{base_url}/api/external/response",
+        "status_url": f"{base_url}/api/external/status",
+        "discovered_automatically": discovered_callback_url is not None,
+        "message": "Usa estas URLs en tu API externa para callbacks"
+    }
 
 @app.post("/process-image")
 async def process_image(file: UploadFile = File(...)):
@@ -875,6 +911,311 @@ async def batch_benchmark(
         for file_path in file_paths:
             if os.path.exists(file_path):
                 cleanup_file(file_path)
+
+@app.post("/process-and-send-factura")
+async def process_and_send_factura(file: UploadFile = File(...)):
+    """
+    Procesar imagen de factura y enviar datos a API externa de gestión de facturas
+    
+    Args:
+        file: Archivo de imagen/PDF de factura a procesar
+        
+    Returns:
+        JSON con resultado del procesamiento y respuesta de la API externa
+    """
+    file_path = None
+    try:
+        # Validar tipo de archivo
+        if not validate_file_type(file, settings.ALLOWED_EXTENSIONS):
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Tipo de archivo no permitido. Extensiones permitidas: {', '.join(settings.ALLOWED_EXTENSIONS)}"
+            )
+        
+        # Validar tamaño de archivo
+        if not validate_file_size(file, settings.MAX_FILE_SIZE):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Archivo demasiado grande. Tamaño máximo: {settings.MAX_FILE_SIZE / (1024*1024):.1f}MB"
+            )
+        
+        # Guardar archivo temporalmente
+        file_path = save_upload_file(file, settings.UPLOAD_DIR)
+        if not file_path:
+            raise HTTPException(
+                status_code=500,
+                detail="Error guardando archivo temporal"
+            )
+        
+        logger.info(f"Procesando factura para envío: {file_path}")
+        
+        # Procesar imagen con LayoutParser y Tesseract
+        result = image_processor.process_image(file_path)
+        
+        # Extraer datos de la factura
+        invoice_data = result.metadata.get("invoice_parsing", {})
+        
+        if not invoice_data.get("success", False):
+            raise HTTPException(
+                status_code=400,
+                detail="No se pudo extraer datos de factura del archivo"
+            )
+        
+        # Obtener la primera factura
+        invoices = invoice_data.get("invoices", [])
+        if not invoices:
+            raise HTTPException(
+                status_code=400,
+                detail="No se encontraron facturas en el archivo"
+            )
+        
+        invoice = invoices[0]
+        extracted_fields = invoice.get("extracted_fields", {})
+        
+        # Obtener URL base dinámicamente
+        global discovered_callback_url
+        base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://tu-api.serveo.net")
+        
+        # Leer la imagen como bytes para enviar
+        with open(file_path, 'rb') as image_file:
+            image_data = image_file.read()
+        
+        # Preparar datos para enviar a API externa (imagen completa + URLs de callback)
+        datos_factura = {
+            "imagen": {
+                "filename": result.filename,
+                "content_type": result.content_type,
+                "data": image_data.hex(),  # Imagen como hex string
+                "size": len(image_data)
+            },
+            "callback_url": f"{base_url}/api/external/response",  # URL dinámica para respuesta
+            "status_url": f"{base_url}/api/external/status"  # URL dinámica para estado
+        }
+        
+        # Enviar a API externa
+        logger.info("Enviando datos a API externa de facturas...")
+        respuesta_externa = await facturas_client.enviar_factura(datos_factura)
+        
+        return {
+            "status": "success",
+            "message": "Factura procesada y enviada correctamente",
+            "procesamiento_local": {
+                "filename": result.filename,
+                "file_size": result.file_size,
+                "processing_time": result.processing_time,
+                "extracted_fields": extracted_fields,
+                "raw_text": invoice.get("raw_text", ""),
+                "confidence": invoice.get("parsing_confidence", 0.0)
+            },
+            "respuesta_api_externa": respuesta_externa,
+            "metadata": {
+                "external_api_url": facturas_client.base_url,
+                "external_api_endpoint": facturas_client.endpoint,
+                "timestamp": result.metadata.get("timestamp")
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error procesando y enviando factura: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
+    finally:
+        # Limpiar archivo temporal
+        if file_path and os.path.exists(file_path):
+            cleanup_file(file_path)
+
+@app.post("/process-factura-only")
+async def process_factura_only(file: UploadFile = File(...)):
+    """
+    Solo procesar imagen de factura, sin enviar a API externa
+    
+    Args:
+        file: Archivo de imagen/PDF de factura a procesar
+        
+    Returns:
+        JSON con resultado del procesamiento local
+    """
+    file_path = None
+    try:
+        # Validar tipo de archivo
+        if not validate_file_type(file, settings.ALLOWED_EXTENSIONS):
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Tipo de archivo no permitido. Extensiones permitidas: {', '.join(settings.ALLOWED_EXTENSIONS)}"
+            )
+        
+        # Validar tamaño de archivo
+        if not validate_file_size(file, settings.MAX_FILE_SIZE):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Archivo demasiado grande. Tamaño máximo: {settings.MAX_FILE_SIZE / (1024*1024):.1f}MB"
+            )
+        
+        # Guardar archivo temporalmente
+        file_path = save_upload_file(file, settings.UPLOAD_DIR)
+        if not file_path:
+            raise HTTPException(
+                status_code=500,
+                detail="Error guardando archivo temporal"
+            )
+        
+        logger.info(f"Procesando factura (solo local): {file_path}")
+        
+        # Procesar imagen con LayoutParser y Tesseract
+        result = image_processor.process_image(file_path)
+        
+        # Extraer datos de la factura
+        invoice_data = result.metadata.get("invoice_parsing", {})
+        
+        if not invoice_data.get("success", False):
+            raise HTTPException(
+                status_code=400,
+                detail="No se pudo extraer datos de factura del archivo"
+            )
+        
+        # Obtener la primera factura
+        invoices = invoice_data.get("invoices", [])
+        if not invoices:
+            raise HTTPException(
+                status_code=400,
+                detail="No se encontraron facturas en el archivo"
+            )
+        
+        invoice = invoices[0]
+        extracted_fields = invoice.get("extracted_fields", {})
+        
+        return {
+            "status": "success",
+            "message": "Factura procesada correctamente (solo procesamiento local)",
+            "resultado": {
+                "filename": result.filename,
+                "file_size": result.file_size,
+                "content_type": result.content_type,
+                "processing_time": result.processing_time,
+                "extracted_fields": extracted_fields,
+                "raw_text": invoice.get("raw_text", ""),
+                "confidence": invoice.get("parsing_confidence", 0.0),
+                "metadata": {
+                    "text_blocks_count": len(result.text_blocks),
+                    "tables_count": len(result.tables),
+                    "figures_count": len(result.figures),
+                    "layout_elements_count": result.metadata.get("layout_elements_count", 0),
+                    "processor": result.metadata.get("processor", "scikit-image")
+                }
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error procesando factura: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno del servidor: {str(e)}"
+        )
+    finally:
+        # Limpiar archivo temporal
+        if file_path and os.path.exists(file_path):
+            cleanup_file(file_path)
+
+@app.post("/api/external/response")
+async def receive_external_response(request: Request):
+    """
+    Endpoint para recibir respuesta de la API externa después del procesamiento
+    
+    Args:
+        request: Request con datos de respuesta de la API externa
+        
+    Returns:
+        JSON confirmando recepción
+    """
+    try:
+        # Obtener datos del request
+        data = await request.json()
+        
+        logger.info(f"Recibida respuesta de API externa: {data}")
+        
+        # Aquí puedes procesar la respuesta como necesites
+        # Por ejemplo, guardar en base de datos, notificar al usuario, etc.
+        
+        return {
+            "status": "success",
+            "message": "Respuesta de API externa recibida correctamente",
+            "received_data": data,
+            "timestamp": data.get("timestamp", "N/A")
+        }
+        
+    except Exception as e:
+        logger.error(f"Error procesando respuesta de API externa: {e}")
+        return {
+            "status": "error",
+            "message": f"Error procesando respuesta: {str(e)}"
+        }
+
+@app.post("/api/external/status")
+async def receive_external_status(request: Request):
+    """
+    Endpoint para recibir actualizaciones de estado de la API externa
+    
+    Args:
+        request: Request con datos de estado de la API externa
+        
+    Returns:
+        JSON confirmando recepción del estado
+    """
+    try:
+        # Obtener datos del request
+        data = await request.json()
+        
+        logger.info(f"Recibida actualización de estado de API externa: {data}")
+        
+        # Procesar actualización de estado
+        status = data.get("status", "unknown")
+        message = data.get("message", "")
+        
+        return {
+            "status": "success",
+            "message": "Estado de API externa actualizado correctamente",
+            "external_status": status,
+            "external_message": message,
+            "timestamp": data.get("timestamp", "N/A")
+        }
+        
+    except Exception as e:
+        logger.error(f"Error procesando estado de API externa: {e}")
+        return {
+            "status": "error",
+            "message": f"Error procesando estado: {str(e)}"
+        }
+
+async def startup_discovery():
+    """Función de inicio para descubrir URL automáticamente"""
+    global discovered_callback_url
+    
+    logger.info("🔍 Iniciando descubrimiento automático de URL...")
+    
+    # Esperar un poco para que la API esté completamente iniciada
+    await asyncio.sleep(2)
+    
+    # Intentar descubrir URL automáticamente
+    discovered_url = url_discoverer.auto_discover_and_register()
+    
+    if discovered_url:
+        discovered_callback_url = discovered_url
+        logger.info(f"🎉 URL descubierta y registrada: {discovered_url}")
+    else:
+        logger.warning("⚠️ No se pudo descubrir URL automáticamente")
+        logger.info("💡 Usa la variable de entorno CALLBACK_BASE_URL para configurar manualmente")
+
+@app.on_event("startup")
+async def startup_event():
+    """Evento de inicio de la aplicación"""
+    # Ejecutar descubrimiento en background
+    asyncio.create_task(startup_discovery())
 
 if __name__ == "__main__":
     uvicorn.run(

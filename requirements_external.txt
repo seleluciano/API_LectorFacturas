@@ -1,0 +1,3 @@
+# Dependencias adicionales para integración con API externa
+httpx>=0.24.0
+asyncio
