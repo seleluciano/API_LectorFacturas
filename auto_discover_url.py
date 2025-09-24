@@ -26,7 +26,13 @@ class URLDiscoverer:
             logger.info(f"✅ URL encontrada en variable de entorno: {env_url}")
             return env_url
         
-        # Método 2: Probar URLs comunes de tunneling
+        # Método 2: Intentar detectar serveo.net automáticamente
+        serveo_url = self._detect_serveo_url()
+        if serveo_url:
+            logger.info(f"✅ URL de serveo.net detectada: {serveo_url}")
+            return serveo_url
+        
+        # Método 3: Probar URLs comunes de tunneling
         common_urls = [
             "https://localhost.run",
             "https://ngrok.io",
@@ -41,7 +47,7 @@ class URLDiscoverer:
                 logger.info(f"✅ URL descubierta desde {base_url}: {discovered}")
                 return discovered
         
-        # Método 3: Usar servicios de detección de IP
+        # Método 4: Usar servicios de detección de IP
         public_ip = self._get_public_ip()
         if public_ip:
             # Probar puertos comunes
@@ -82,6 +88,77 @@ class URLDiscoverer:
             logger.debug(f"Error descubriendo desde {service}: {e}")
         
         return None
+    
+    def _detect_serveo_url(self) -> Optional[str]:
+        """Detectar URL de serveo.net automáticamente"""
+        try:
+            # Método 1: Verificar procesos SSH activos
+            import subprocess
+            result = subprocess.run(['ps', 'aux'], capture_output=True, text=True)
+            if 'serveo.net' in result.stdout:
+                # Buscar en la salida del proceso
+                lines = result.stdout.split('\n')
+                for line in lines:
+                    if 'serveo.net' in line and 'ssh' in line:
+                        # Extraer URL de la línea
+                        # Formato típico: ssh -R 80:localhost:8080 serveo.net
+                        # La URL se genera automáticamente
+                        logger.info("🔍 Proceso serveo.net detectado, intentando descubrir URL...")
+                        return self._try_serveo_urls()
+            
+            # Método 2: Verificar conexiones de red
+            result = subprocess.run(['netstat', '-an'], capture_output=True, text=True)
+            if 'serveo.net' in result.stdout:
+                logger.info("🔍 Conexión serveo.net detectada, intentando descubrir URL...")
+                return self._try_serveo_urls()
+            
+            return None
+            
+        except Exception as e:
+            logger.debug(f"Error detectando serveo.net: {e}")
+            return None
+    
+    def _try_serveo_urls(self) -> Optional[str]:
+        """Intentar descubrir URL de serveo.net probando patrones comunes"""
+        try:
+            # Obtener IP pública
+            public_ip = self._get_public_ip()
+            if not public_ip:
+                return None
+            
+            # Probar diferentes patrones de URL de serveo.net
+            # serveo.net usa hashes basados en la IP y puerto
+            import hashlib
+            
+            # Generar posibles hashes
+            possible_hashes = []
+            
+            # Hash de IP + puerto
+            for port in [80, 8080, 8000]:
+                data = f"{public_ip}:{port}"
+                hash_obj = hashlib.md5(data.encode())
+                possible_hashes.append(hash_obj.hexdigest())
+            
+            # Hash de timestamp aproximado
+            import time
+            current_time = int(time.time())
+            for offset in range(-3600, 3600, 300):  # ±1 hora en intervalos de 5 min
+                data = f"{public_ip}:{current_time + offset}"
+                hash_obj = hashlib.md5(data.encode())
+                possible_hashes.append(hash_obj.hexdigest())
+            
+            # Probar URLs
+            for hash_val in possible_hashes[:10]:  # Limitar a 10 intentos
+                test_url = f"https://{hash_val}.serveo.net"
+                if self._test_url(test_url):
+                    logger.info(f"✅ URL de serveo.net encontrada: {test_url}")
+                    return test_url
+            
+            return None
+            
+        except Exception as e:
+            logger.debug(f"Error probando URLs de serveo.net: {e}")
+            return None
     
     def _get_public_ip(self) -> Optional[str]:
         """Obtener IP pública"""
