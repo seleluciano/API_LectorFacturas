@@ -6,6 +6,18 @@ import os
 from typing import Dict, Any, List
 import logging
 
+# Aplicar parche de compatibilidad para Pillow
+try:
+    from PIL import Image
+    if not hasattr(Image, 'LINEAR'):
+        Image.LINEAR = Image.Resampling.LANCZOS
+    if not hasattr(Image, 'BILINEAR'):
+        Image.BILINEAR = Image.Resampling.BILINEAR
+    if not hasattr(Image, 'NEAREST'):
+        Image.NEAREST = Image.Resampling.NEAREST
+except ImportError:
+    pass
+
 from config import settings
 from models import ProcessingResult, ErrorResponse, StructuredInvoiceResponse, InvoiceFields, MetricsData, BatchMetrics
 from services.advanced_image_processor import AdvancedImageProcessor
