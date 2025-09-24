@@ -20,13 +20,19 @@ class URLDiscoverer:
         """
         Descubrir la URL pública de la API usando diferentes métodos
         """
-        # Método 1: Verificar variable de entorno
+        # Método 1: URL estática configurada
+        static_url = "https://77496bc25bd7192537c784c548197ec2.serveo.net"
+        if self._test_url(static_url):
+            logger.info(f"✅ URL estática configurada: {static_url}")
+            return static_url
+        
+        # Método 2: Verificar variable de entorno
         env_url = os.getenv("CALLBACK_BASE_URL")
         if env_url and self._test_url(env_url):
             logger.info(f"✅ URL encontrada en variable de entorno: {env_url}")
             return env_url
         
-        # Método 2: Intentar detectar serveo.net automáticamente
+        # Método 3: Intentar detectar serveo.net automáticamente
         serveo_url = self._detect_serveo_url()
         if serveo_url:
             logger.info(f"✅ URL de serveo.net detectada: {serveo_url}")

@@ -106,7 +106,7 @@ async def health_check():
 async def get_callback_urls():
     """Endpoint para obtener las URLs de callback actuales"""
     global discovered_callback_url
-    base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://tu-api.serveo.net")
+    base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://77496bc25bd7192537c784c548197ec2.serveo.net")
     
     return {
         "base_url": base_url,
@@ -974,7 +974,7 @@ async def process_and_send_factura(file: UploadFile = File(...)):
         
         # Obtener URL base dinámicamente
         global discovered_callback_url
-        base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://tu-api.serveo.net")
+        base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://77496bc25bd7192537c784c548197ec2.serveo.net")
         
         # Leer la imagen como bytes para enviar
         with open(file_path, 'rb') as image_file:
