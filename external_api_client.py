@@ -34,12 +34,6 @@ class FacturasAPIClient:
             "User-Agent": "FacturaProcessor/1.0"
         }
         
-        # Agregar URLs de callback en headers
-        if "callback_url" in datos_factura:
-            headers["X-Callback-URL"] = datos_factura["callback_url"]
-        if "status_url" in datos_factura:
-            headers["X-Status-URL"] = datos_factura["status_url"]
-        
         # Si hay API key configurada, agregar autenticación
         api_key = os.getenv("FACTURAS_API_KEY")
         if api_key:

@@ -28,8 +28,6 @@ from external_api_client import facturas_client
 from config_external import get_config
 from fastapi import Request
 import json
-from auto_discover_url import url_discoverer
-import asyncio
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -64,8 +62,8 @@ image_processor = AdvancedImageProcessor()
 metrics_calculator = MetricsCalculator()
 batch_processor = BatchProcessor()
 
-# Variable global para la URL descubierta
-discovered_callback_url = None
+# URL estática configurada
+STATIC_CALLBACK_URL = "https://d3e7dadb0157c65efb1d427e8d21a9b5.serveo.net"
 
 @app.get("/")
 async def root():
@@ -105,15 +103,11 @@ async def health_check():
 @app.get("/callback-urls")
 async def get_callback_urls():
     """Endpoint para obtener las URLs de callback actuales"""
-    global discovered_callback_url
-    base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://77496bc25bd7192537c784c548197ec2.serveo.net")
-    
     return {
-        "base_url": base_url,
-        "callback_url": f"{base_url}/api/external/response",
-        "status_url": f"{base_url}/api/external/status",
-        "discovered_automatically": discovered_callback_url is not None,
-        "message": "Usa estas URLs en tu API externa para callbacks"
+        "base_url": STATIC_CALLBACK_URL,
+        "callback_url": f"{STATIC_CALLBACK_URL}/api/external/response",
+        "status_url": f"{STATIC_CALLBACK_URL}/api/external/status",
+        "message": "URLs estáticas configuradas para callbacks"
     }
 
 @app.post("/process-image")
@@ -972,9 +966,8 @@ async def process_and_send_factura(file: UploadFile = File(...)):
         invoice = invoices[0]
         extracted_fields = invoice.get("extracted_fields", {})
         
-        # Obtener URL base dinámicamente
-        global discovered_callback_url
-        base_url = discovered_callback_url or os.getenv("CALLBACK_BASE_URL", "https://77496bc25bd7192537c784c548197ec2.serveo.net")
+        # Usar URL estática configurada
+        base_url = STATIC_CALLBACK_URL
         
         # Leer la imagen como bytes para enviar
         with open(file_path, 'rb') as image_file:
@@ -1192,30 +1185,10 @@ async def receive_external_status(request: Request):
             "message": f"Error procesando estado: {str(e)}"
         }
 
-async def startup_discovery():
-    """Función de inicio para descubrir URL automáticamente"""
-    global discovered_callback_url
-    
-    logger.info("🔍 Iniciando descubrimiento automático de URL...")
-    
-    # Esperar un poco para que la API esté completamente iniciada
-    await asyncio.sleep(2)
-    
-    # Intentar descubrir URL automáticamente
-    discovered_url = url_discoverer.auto_discover_and_register()
-    
-    if discovered_url:
-        discovered_callback_url = discovered_url
-        logger.info(f"🎉 URL descubierta y registrada: {discovered_url}")
-    else:
-        logger.warning("⚠️ No se pudo descubrir URL automáticamente")
-        logger.info("💡 Usa la variable de entorno CALLBACK_BASE_URL para configurar manualmente")
-
 @app.on_event("startup")
 async def startup_event():
     """Evento de inicio de la aplicación"""
-    # Ejecutar descubrimiento en background
-    asyncio.create_task(startup_discovery())
+    logger.info(f"🚀 API iniciada con URL estática: {STATIC_CALLBACK_URL}")
 
 if __name__ == "__main__":
     uvicorn.run(

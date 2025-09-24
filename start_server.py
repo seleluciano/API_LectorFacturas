@@ -1,39 +1,61 @@
+#!/usr/bin/env python3
 """
 Script para iniciar el servidor de desarrollo
 """
+
 import uvicorn
-import sys
 import os
-from pathlib import Path
+import sys
+import logging
 
-# Agregar el directorio actual al path para importaciones
-sys.path.append(str(Path(__file__).parent))
+# Añadir el directorio actual al PATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
-from config import settings
+from main import app
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def main():
-    """Iniciar el servidor de desarrollo"""
-    print("Iniciando servidor de desarrollo...")
-    print(f"   Host: {settings.HOST}")
-    print(f"   Puerto: {settings.PORT}")
-    print(f"   Debug: {settings.DEBUG}")
-    print(f"   Documentacion: http://{settings.HOST}:{settings.PORT}/docs")
-    print("\n" + "="*50)
+    """Función principal para iniciar el servidor"""
+    
+    # Configuración del servidor
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 8080))
+    debug = os.getenv("DEBUG", "False").lower() == "true"
+    log_level = os.getenv("LOG_LEVEL", "info").lower()
+    workers = int(os.getenv("WORKERS", 1))
+    
+    logger.info("Iniciando servidor de desarrollo...")
+    logger.info(f"   Host: {host}")
+    logger.info(f"   Puerto: {port}")
+    logger.info(f"   Debug: {debug}")
+    logger.info(f"   Documentacion: http://{host}:{port}/docs")
+    logger.info("=" * 50)
     
     try:
-        uvicorn.run(
+        # Configurar Uvicorn
+        config = uvicorn.Config(
             "main:app",
-            host=settings.HOST,
-            port=settings.PORT,
-            reload=settings.DEBUG,
-            log_level="info",
-            access_log=True
+            host=host,
+            port=port,
+            reload=debug,
+            log_level=log_level,
+            workers=workers if not debug else 1
         )
-    except KeyboardInterrupt:
-        print("\n\nServidor detenido por el usuario")
+        
+        server = uvicorn.Server(config)
+        server.run()
+        
     except Exception as e:
-        print(f"\nError iniciando servidor: {str(e)}")
+        logger.error(f"Error iniciando servidor: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logger.info("🛑 Servidor detenido por el usuario")
+    except Exception as e:
+        logger.error(f"❌ Error: {e}")
+        sys.exit(1)
