@@ -106,7 +106,12 @@ class AdvancedImageProcessor:
                 images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150, poppler_path=poppler_path)
             else:
                 logger.info("Usando Poppler del sistema")
-                images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150)
+                try:
+                    images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150)
+                except Exception as e:
+                    logger.error(f"Error con Poppler del sistema: {e}")
+                    # Intentar sin especificar poppler_path
+                    images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150, poppler_path=None)
 
             if not images:
                 raise ValueError("No se pudo convertir el PDF a imagen")

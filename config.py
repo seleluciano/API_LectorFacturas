@@ -36,6 +36,7 @@ class Settings:
         # Intentar ubicaciones comunes
         possible_paths = [
             os.path.join(os.path.dirname(__file__), "poppler", "poppler-23.08.0", "Library", "bin"),
+            "/home/sluciano/micromamba/envs/env/bin",  # Conda environment
             "/usr/bin",  # Linux
             "/usr/local/bin",  # Linux
             "/opt/homebrew/bin",  # macOS
