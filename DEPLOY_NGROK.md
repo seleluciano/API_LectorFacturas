@@ -65,7 +65,7 @@ screen -S server
 # Dentro de la sesión, ejecutar el servidor
 python start_server.py
 
-# Desconectar de la sesión (Ctrl+A, luego D)
+# Desconectar de la sesión: Ctrl+A, luego presionar D
 # El servidor continúa ejecutándose en segundo plano
 
 # Crear una nueva sesión de screen para ngrok
@@ -74,7 +74,7 @@ screen -S ngrok
 # Dentro de la sesión, ejecutar ngrok
 ngrok http 8000 --domain=skye-nonsensate-clavately.ngrok-free.dev
 
-# Desconectar de la sesión (Ctrl+A, luego D)
+# Desconectar de la sesión: Ctrl+A, luego presionar D
 # Ngrok continúa ejecutándose en segundo plano
 
 # Reconectar a las sesiones
