@@ -324,17 +324,26 @@ class AdvancedImageProcessor:
         converted_image_path = None
         
         try:
+            logger.info(f"=== INICIANDO PROCESAMIENTO ===")
+            logger.info(f"Archivo: {image_path}")
+            
             filename = os.path.basename(image_path)
             file_size = os.path.getsize(image_path)
+            logger.info(f"Tamaño del archivo: {file_size} bytes")
             
             # Preprocesamiento avanzado
+            logger.info("Aplicando preprocesamiento avanzado...")
             processed_image = self.preprocess_image_advanced(image_path)
+            logger.info("Preprocesamiento completado")
             
             if image_path.lower().endswith('.pdf'):
                 converted_image_path = image_path.replace('.pdf', '_converted.jpg')
+                logger.info(f"PDF detectado, imagen convertida: {converted_image_path}")
             
             # Detectar layout
+            logger.info("Detectando layout...")
             layout_elements = self.detect_layout(processed_image)
+            logger.info(f"Layout detectado: {len(layout_elements)} elementos")
             
             # Extraer bloques de texto
             text_blocks = []
@@ -374,7 +383,9 @@ class AdvancedImageProcessor:
                 ))
             
             # Extraer texto completo (fallback si no hay elementos detectados)
+            logger.info("Extrayendo texto completo...")
             full_text, full_confidence = self.extract_text_from_region(processed_image, [0, 0, processed_image.shape[1], processed_image.shape[0]])
+            logger.info(f"Texto extraído: {len(full_text)} caracteres")
             
             # Si no se detectaron elementos de layout, crear un bloque de texto con todo el contenido
             if not layout_elements and full_text.strip():
@@ -387,7 +398,9 @@ class AdvancedImageProcessor:
                 ))
             
             # Parsear campos específicos de la factura (soporta múltiples facturas)
+            logger.info("Analizando facturas...")
             invoice_data = self.invoice_parser.parse_multiple_invoices(full_text)
+            logger.info(f"Análisis de facturas: {invoice_data}")
             
             # Asegurar que el raw_text se preserve en cada factura
             if invoice_data.get('success') and invoice_data.get('invoices'):
@@ -396,6 +409,7 @@ class AdvancedImageProcessor:
                         invoice['raw_text'] = full_text
             
             processing_time = time.time() - start_time
+            logger.info(f"Tiempo total de procesamiento: {processing_time:.2f}s")
             content_type = "application/pdf" if image_path.lower().endswith('.pdf') else "image/jpeg"
             
             return ProcessingResult(
@@ -422,6 +436,8 @@ class AdvancedImageProcessor:
         except Exception as e:
             processing_time = time.time() - start_time
             logger.error(f"Error procesando imagen: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
             
             return ProcessingResult(
                 filename=os.path.basename(image_path),

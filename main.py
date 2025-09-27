@@ -424,7 +424,12 @@ async def process_multiple_images(files: List[UploadFile] = File(...)):
                 file_paths.append(file_path)
                 
                 # Procesar archivo
+                logger.info(f"Iniciando procesamiento de archivo: {file_path}")
+                logger.info(f"Tamaño del archivo: {os.path.getsize(file_path)} bytes")
                 result = processor.process_image(file_path)
+                logger.info(f"Procesamiento completado. Status: {result.status}")
+                logger.info(f"Tiempo de procesamiento: {result.processing_time:.2f}s")
+                logger.info(f"Longitud del texto extraído: {len(result.raw_text)}")
                 
                 # Detectar si es una factura y extraer datos estructurados
                 invoice_data = result.metadata.get("invoice_parsing", {})
