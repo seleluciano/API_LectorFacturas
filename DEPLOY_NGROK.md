@@ -55,6 +55,46 @@
 ngrok http 8000 --domain=skye-nonsensate-clavately.ngrok-free.dev
 ```
 
+### Gestión de Procesos con Screen
+Para mantener el servidor ejecutándose en segundo plano, se utiliza `screen`:
+
+```bash
+# Crear una nueva sesión de screen para el servidor
+screen -S server
+
+# Dentro de la sesión, ejecutar el servidor
+python start_server.py
+
+# Desconectar de la sesión (Ctrl+A, luego D)
+# El servidor continúa ejecutándose en segundo plano
+
+# Crear una nueva sesión de screen para ngrok
+screen -S ngrok
+
+# Dentro de la sesión, ejecutar ngrok
+ngrok http 8000 --domain=skye-nonsensate-clavately.ngrok-free.dev
+
+# Desconectar de la sesión (Ctrl+A, luego D)
+# Ngrok continúa ejecutándose en segundo plano
+
+# Reconectar a las sesiones
+screen -r servidor  # Para el servidor
+screen -r ngrok     # Para ngrok
+
+# Listar todas las sesiones activas
+screen -ls
+
+# Terminar sesiones específicas
+screen -S servidor -X quit
+screen -S ngrok -X quit
+```
+
+**Ventajas de usar Screen:**
+- ✅ **Persistencia**: El servidor continúa ejecutándose aunque se cierre la terminal
+- ✅ **Reconexión**: Puedes reconectarte a la sesión en cualquier momento
+- ✅ **Múltiples sesiones**: Puedes tener varios procesos ejecutándose simultáneamente
+- ✅ **Logs visibles**: Puedes ver los logs del servidor en tiempo real
+
 ### Variables de Entorno
 ```env
 HOST=0.0.0.0

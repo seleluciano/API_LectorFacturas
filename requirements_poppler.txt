@@ -1,0 +1,25 @@
+# Instrucciones para instalar Poppler en diferentes sistemas operativos
+
+# Windows:
+# 1. Los binarios de Poppler ya están incluidos en el directorio poppler/
+# 2. No se requiere instalación adicional
+# 3. La ruta se configura automáticamente en config.py
+
+# Linux (Ubuntu/Debian):
+# sudo apt-get update
+# sudo apt-get install poppler-utils
+
+# Linux (CentOS/RHEL):
+# sudo yum install poppler-utils
+# # o para versiones más nuevas:
+# sudo dnf install poppler-utils
+
+# macOS (con Homebrew):
+# brew install poppler
+
+# macOS (con MacPorts):
+# sudo port install poppler
+
+# Verificar instalación:
+# pdftoppm -h
+# pdftotext -h

@@ -29,6 +29,9 @@ class Settings:
     # Configuración de Tesseract
     TESSERACT_PATH = os.getenv("TESSERACT_PATH", r"C:\Program Files\Tesseract-OCR\tesseract.exe")  # Ruta a tesseract.exe en Windows
     
+    # Configuración de Poppler para PDFs
+    POPPLER_PATH = os.getenv("POPPLER_PATH", os.path.join(os.path.dirname(__file__), "poppler", "poppler-23.08.0", "Library", "bin"))
+    
     # Configuración de LayoutParser (optimizada para detección)
     LAYOUT_MODEL_CONFIG = {
         "model_name": "lp://PubLayNet/faster_rcnn_R_50_FPN_3x/config",

@@ -1,19 +1,36 @@
-fastapi==0.116.1
+# API Framework
+fastapi==0.117.1
 uvicorn[standard]==0.35.0
 python-multipart==0.0.20
-layoutparser==0.3.4
-pytesseract==0.3.13
-Pillow==11.3.0
-numpy==2.2.6
-pandas==2.3.2
+
+# HTTP Client
+httpx==0.28.1
+
+# Environment Configuration
 python-dotenv==1.1.1
-pdf2image==1.17.0
+
+# Image Processing and OCR
+Pillow==11.3.0
+pytesseract==0.3.13
 scikit-image==0.24.0
 scipy==1.16.1
-httpx
+numpy==2.2.6
 
-# Dependencias para LayoutParser con Detectron2
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
-detectron2 @ git+https://github.com/facebookresearch/detectron2.git@v0.4
+# PDF Processing
+pdf2image==1.17.0
+# Poppler binaries are included in the project (poppler/ directory)
+
+# Data Processing
+pandas==2.3.2
+
+# Layout Analysis (Optional - requires Detectron2)
+layoutparser==0.3.4
+
+# Machine Learning Dependencies (Optional - for LayoutParser)
+# torch>=2.0.0
+# torchvision>=0.15.0
+# torchaudio>=2.0.0
+# detectron2 @ git+https://github.com/facebookresearch/detectron2.git@v0.4
+
+# Additional utilities
+requests>=2.31.0

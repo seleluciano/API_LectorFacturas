@@ -564,15 +564,18 @@ class InvoiceParser:
         if not extracted_fields:
             return 0.0
         
-        # Campos críticos para facturas
-        critical_fields = ['empresa', 'numero_factura', 'fecha', 'importe_total']
+        # Campos críticos para facturas (usando nombres correctos del parser)
+        critical_fields = ['razon_social_vendedor', 'numero_factura', 'fecha_emision', 'importe_total']
         found_critical = sum(1 for field in critical_fields if field in extracted_fields)
         
-        # Campos adicionales
-        additional_fields = ['cuit', 'cliente', 'iva', 'subtotal']
+        # Campos adicionales (usando nombres correctos del parser)
+        additional_fields = ['cuit_vendedor', 'razon_social_comprador', 'subtotal', 'tipo_factura']
         found_additional = sum(1 for field in additional_fields if field in extracted_fields)
         
         # Calcular confianza
+        if len(extracted_fields) == 0:
+            return 0.0
+        
         confidence = (found_critical * 0.4 + found_additional * 0.15) / len(extracted_fields)
         return min(confidence, 1.0)
     
@@ -585,15 +588,29 @@ class InvoiceParser:
             if len(invoice_separators) <= 1:
                 # Solo hay una factura, procesar normalmente
                 single_result = self.parse_invoice(text)
-                return {
-                    'success': True,
-                    'invoices': [single_result],
-                    'total_invoices': 1,
-                    'raw_text': text
-                }
+                
+                # Verificar si realmente se detectó una factura válida
+                if single_result.get('success', False) and single_result.get('extracted_fields'):
+                    return {
+                        'success': True,
+                        'invoices': [single_result],
+                        'total_invoices': 1,
+                        'raw_text': text
+                    }
+                else:
+                    # No se detectó una factura válida
+                    return {
+                        'success': False,
+                        'invoices': [],
+                        'total_invoices': 0,
+                        'raw_text': text,
+                        'error': 'No se detectó una factura válida en el texto'
+                    }
             
             # Procesar múltiples facturas
             invoices = []
+            valid_invoices = []
+            
             for i, (start, end) in enumerate(invoice_separators):
                 invoice_text = text[start:end].strip()
                 if invoice_text:
@@ -601,13 +618,27 @@ class InvoiceParser:
                     result['invoice_number'] = i + 1
                     result['text_range'] = {'start': start, 'end': end}
                     invoices.append(result)
+                    
+                    # Solo contar como válida si tiene campos extraídos
+                    if result.get('success', False) and result.get('extracted_fields'):
+                        valid_invoices.append(result)
             
-            return {
-                'success': True,
-                'invoices': invoices,
-                'total_invoices': len(invoices),
-                'raw_text': text
-            }
+            # Solo considerar exitoso si hay al menos una factura válida
+            if valid_invoices:
+                return {
+                    'success': True,
+                    'invoices': valid_invoices,
+                    'total_invoices': len(valid_invoices),
+                    'raw_text': text
+                }
+            else:
+                return {
+                    'success': False,
+                    'invoices': [],
+                    'total_invoices': 0,
+                    'raw_text': text,
+                    'error': 'No se detectaron facturas válidas en el texto'
+                }
             
         except Exception as e:
             logger.error(f"Error parseando múltiples facturas: {e}")
