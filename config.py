@@ -30,7 +30,26 @@ class Settings:
     TESSERACT_PATH = os.getenv("TESSERACT_PATH", r"C:\Program Files\Tesseract-OCR\tesseract.exe")  # Ruta a tesseract.exe en Windows
     
     # Configuración de Poppler para PDFs
-    POPPLER_PATH = os.getenv("POPPLER_PATH", os.path.join(os.path.dirname(__file__), "poppler", "poppler-23.08.0", "Library", "bin"))
+    # Poppler path - intentar múltiples ubicaciones
+    POPPLER_PATH = os.getenv("POPPLER_PATH", None)
+    if not POPPLER_PATH:
+        # Intentar ubicaciones comunes
+        possible_paths = [
+            os.path.join(os.path.dirname(__file__), "poppler", "poppler-23.08.0", "Library", "bin"),
+            "/usr/bin",  # Linux
+            "/usr/local/bin",  # Linux
+            "/opt/homebrew/bin",  # macOS
+            "/usr/local/Cellar/poppler/*/bin",  # macOS Homebrew
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path) and os.path.exists(os.path.join(path, "pdftoppm")):
+                POPPLER_PATH = path
+                break
+        
+        # Si no se encuentra, usar None (pdf2image intentará usar PATH del sistema)
+        if not POPPLER_PATH:
+            POPPLER_PATH = None
     
     # Configuración de LayoutParser (optimizada para detección)
     LAYOUT_MODEL_CONFIG = {

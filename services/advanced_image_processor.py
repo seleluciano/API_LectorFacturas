@@ -95,24 +95,31 @@ class AdvancedImageProcessor:
     def convert_pdf_to_image(self, pdf_path: str) -> str:
         """Convertir PDF a imagen"""
         try:
+            logger.info(f"Convirtiendo PDF: {pdf_path}")
+            
             # Usar Poppler local si está disponible con DPI optimizado para velocidad
             poppler_path = settings.POPPLER_PATH
-            if os.path.exists(poppler_path):
+            logger.info(f"Poppler path configurado: {poppler_path}")
+            
+            if poppler_path and os.path.exists(poppler_path):
+                logger.info("Usando Poppler local")
                 images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150, poppler_path=poppler_path)
             else:
+                logger.info("Usando Poppler del sistema")
                 images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150)
-            
+
             if not images:
                 raise ValueError("No se pudo convertir el PDF a imagen")
-            
+
             image_path = pdf_path.replace('.pdf', '_converted.jpg')
             images[0].save(image_path, 'JPEG', quality=95)
-            
+
             logger.info(f"PDF convertido a imagen: {image_path}")
             return image_path
-            
+
         except Exception as e:
             logger.error(f"Error convirtiendo PDF: {str(e)}")
+            logger.error("Verifica que Poppler esté instalado y en el PATH")
             raise
 
     def preprocess_image_advanced(self, image_path: str) -> np.ndarray:
