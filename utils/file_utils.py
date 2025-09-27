@@ -82,12 +82,18 @@ def save_upload_file(file: UploadFile, upload_dir: str) -> Optional[str]:
         unique_filename = generate_unique_filename(file.filename)
         file_path = os.path.join(upload_dir, unique_filename)
         
+        # Resetear posición del archivo antes de leer
+        file.file.seek(0)
+        
         # Guardar archivo
         with open(file_path, "wb") as buffer:
             content = file.file.read()
             buffer.write(content)
         
-        logger.info(f"Archivo guardado: {file_path}")
+        # Resetear posición del archivo después de leer
+        file.file.seek(0)
+        
+        logger.info(f"Archivo guardado: {file_path} (tamaño: {len(content)} bytes)")
         return file_path
         
     except Exception as e:
