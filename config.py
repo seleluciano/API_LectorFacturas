@@ -39,16 +39,16 @@ class Settings:
         "nms_threshold": 0.5
     }
     
-    # Configuración de scikit-image (optimizada para velocidad)
+    # Configuración de scikit-image (optimizada para velocidad máxima)
     FAST_MODE = os.getenv("FAST_MODE", "True").lower() == "true"  # Modo rápido por defecto
     
     SKIMAGE_CONFIG = {
         "bilateral_sigma_color": 0.1,      # Más alto = más rápido
         "bilateral_sigma_spatial": 5,      # Más bajo = más rápido
-        "gaussian_sigma": 0.1,             # Muy bajo para preservar texto
+        "gaussian_sigma": 0.05,            # Muy bajo para preservar texto y velocidad
         "morphology_disk_size": 1,         # Mantener pequeño
         "enable_bilateral": False,         # Deshabilitar (muy lento)
-        "enable_adaptive_hist": True,      # Habilitar para mejorar contraste
+        "enable_adaptive_hist": False,     # Deshabilitar para velocidad
         "enable_morphology": False,        # Deshabilitar (puede eliminar texto)
         "use_simple_preprocessing": True   # Usar preprocesamiento simple
     }

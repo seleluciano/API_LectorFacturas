@@ -154,7 +154,19 @@ async def process_image(file: UploadFile = File(...)):
         # Detectar si es una factura y extraer datos estructurados
         invoice_data = result.metadata.get("invoice_parsing", {})
         
-        if invoice_data.get("success", False) and invoice_data.get("total_invoices", 0) > 0:
+        # Verificar si es una factura (más flexible)
+        is_invoice = (
+            invoice_data.get("success", False) and 
+            invoice_data.get("total_invoices", 0) > 0
+        ) or (
+            # Fallback: si no se detectó factura pero hay texto, intentar parsing directo
+            not invoice_data.get("success", False) and 
+            result.raw_text and 
+            len(result.raw_text.strip()) > 50 and
+            any(keyword in result.raw_text.upper() for keyword in ['FACTURA', 'ORIGINAL', 'COMPROBANTE', 'CUIT', 'DNI'])
+        )
+        
+        if is_invoice:
             # Es una factura - retornar datos estructurados
             invoices = invoice_data.get("invoices", [])
             structured_invoices = []
@@ -417,7 +429,19 @@ async def process_multiple_images(files: List[UploadFile] = File(...)):
                 # Detectar si es una factura y extraer datos estructurados
                 invoice_data = result.metadata.get("invoice_parsing", {})
                 
-                if invoice_data.get("success", False) and invoice_data.get("total_invoices", 0) > 0:
+                # Verificar si es una factura (más flexible)
+                is_invoice = (
+                    invoice_data.get("success", False) and 
+                    invoice_data.get("total_invoices", 0) > 0
+                ) or (
+                    # Fallback: si no se detectó factura pero hay texto, intentar parsing directo
+                    not invoice_data.get("success", False) and 
+                    result.raw_text and 
+                    len(result.raw_text.strip()) > 50 and
+                    any(keyword in result.raw_text.upper() for keyword in ['FACTURA', 'ORIGINAL', 'COMPROBANTE', 'CUIT', 'DNI'])
+                )
+                
+                if is_invoice:
                     # Es una factura - retornar datos estructurados
                     invoices = invoice_data.get("invoices", [])
                     structured_invoices = []
@@ -959,10 +983,22 @@ async def process_and_send_factura(file: UploadFile = File(...)):
         # Extraer datos de la factura
         invoice_data = result.metadata.get("invoice_parsing", {})
         
-        if not invoice_data.get("success", False):
+        # Verificar si es una factura (más flexible)
+        is_invoice = (
+            invoice_data.get("success", False) and 
+            invoice_data.get("total_invoices", 0) > 0
+        ) or (
+            # Fallback: si no se detectó factura pero hay texto, intentar parsing directo
+            not invoice_data.get("success", False) and 
+            result.raw_text and 
+            len(result.raw_text.strip()) > 50 and
+            any(keyword in result.raw_text.upper() for keyword in ['FACTURA', 'ORIGINAL', 'COMPROBANTE', 'CUIT', 'DNI'])
+        )
+        
+        if not is_invoice:
             raise HTTPException(
                 status_code=400,
-                detail="No se pudo extraer datos de factura del archivo"
+                detail="No se pudo detectar una factura en el archivo"
             )
         
         # Obtener la primera factura
@@ -979,17 +1015,38 @@ async def process_and_send_factura(file: UploadFile = File(...)):
         # Usar URL estática configurada
         base_url = STATIC_CALLBACK_URL
         
-        # Leer la imagen como bytes para enviar
-        with open(file_path, 'rb') as image_file:
-            image_data = image_file.read()
+        # Determinar qué archivo enviar (imagen convertida si es PDF, original si es imagen)
+        if file_path.lower().endswith('.pdf'):
+            # Si es PDF, buscar la imagen convertida
+            converted_image_path = file_path.replace('.pdf', '_converted.jpg')
+            if os.path.exists(converted_image_path):
+                send_file_path = converted_image_path
+                send_content_type = "image/jpeg"
+                send_filename = result.filename.replace('.pdf', '.jpg')
+                logger.info(f"Enviando imagen convertida: {converted_image_path}")
+            else:
+                # Fallback: enviar PDF original
+                send_file_path = file_path
+                send_content_type = result.content_type
+                send_filename = result.filename
+                logger.warning("No se encontró imagen convertida, enviando PDF original")
+        else:
+            # Si es imagen, enviar original
+            send_file_path = file_path
+            send_content_type = result.content_type
+            send_filename = result.filename
         
-        # Preparar datos para enviar a API externa (imagen completa + URLs de callback)
+        # Leer el archivo a enviar
+        with open(send_file_path, 'rb') as file_to_send:
+            file_data = file_to_send.read()
+        
+        # Preparar datos para enviar a API externa
         datos_factura = {
             "imagen": {
-                "filename": result.filename,
-                "content_type": result.content_type,
-                "data": image_data.hex(),  # Imagen como hex string
-                "size": len(image_data)
+                "filename": send_filename,
+                "content_type": send_content_type,
+                "data": file_data.hex(),  # Archivo como hex string
+                "size": len(file_data)
             },
             "callback_url": f"{base_url}/api/external/response",  # URL dinámica para respuesta
             "status_url": f"{base_url}/api/external/status"  # URL dinámica para estado

@@ -95,12 +95,12 @@ class AdvancedImageProcessor:
     def convert_pdf_to_image(self, pdf_path: str) -> str:
         """Convertir PDF a imagen"""
         try:
-            # Usar Poppler local si está disponible
+            # Usar Poppler local si está disponible con DPI optimizado para velocidad
             poppler_path = settings.POPPLER_PATH
             if os.path.exists(poppler_path):
-                images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=300, poppler_path=poppler_path)
+                images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150, poppler_path=poppler_path)
             else:
-                images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=300)
+                images = convert_from_path(pdf_path, first_page=1, last_page=1, dpi=150)
             
             if not images:
                 raise ValueError("No se pudo convertir el PDF a imagen")
