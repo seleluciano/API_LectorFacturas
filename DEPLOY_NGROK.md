@@ -165,7 +165,7 @@ FAST_MODE=True
 
 ### API de Facturas
 - **URL Base**: Configurada en `config_external.py`
-- **Callback URL**: `https://d3e7dadb0157c65efb1d427e8d21a9b5.serveo.net`
+- **Callback URL**: `https://skye-nonsensate-clavately.ngrok-free.dev`
 - **Endpoints de Callback**:
   - `/api/external/response` - Respuestas de procesamiento
   - `/api/external/status` - Actualizaciones de estado
